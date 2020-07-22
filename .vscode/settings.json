@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/59ef36a6-8fa1-4a41-a70d-16792c62a9a7/resourceGroups/appsvc_windows_centralus/providers/Microsoft.Web/sites/formula-checker",
+    "appService.deploySubpath": "."
+}

@@ -1,0 +1,403 @@
+.cols {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.rows {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+}
+
+.w-fit {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.h-fit {
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+}
+
+.all-fit {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+body {
+  margin: 0;
+}
+
+.page-wrapper {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+}
+
+.main-wrapper {
+  background-color: #65CCB8;
+}
+
+.vars-wrapper {
+  display: none;
+  background-color: rgba(24, 38, 40, 0.8);
+}
+
+.help-page {
+  background-color: rgba(24, 38, 40, 0.4);
+}
+
+.upper {
+  height: 5em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.upper img {
+  width: 3em;
+  margin: 1em;
+}
+
+.upper .__links-wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.upper .__links-wrapper .__site-links img {
+  width: 2em;
+  margin-left: 1em;
+  cursor: pointer;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.upper .__links-wrapper .__site-links img:hover {
+  -webkit-transform: translate(0, 0.5em);
+          transform: translate(0, 0.5em);
+}
+
+.upper .__links-wrapper .__vertical-separator {
+  height: 3em;
+  width: 2px;
+  background-color: white;
+  margin-left: 1em;
+  border-radius: 1em;
+  margin-right: 1em;
+}
+
+.upper .__links-wrapper .__lang img {
+  width: 2.5em;
+  margin-right: 1em;
+  cursor: pointer;
+}
+
+.main {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  height: calc(70% - 5em);
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.main .__input-wrapper {
+  width: 40%;
+}
+
+.main .__input-wrapper .mathfield {
+  -webkit-transition: 0.3s border-radius, 0.3s width, 0.3s height, 0.2s font-size;
+  transition: 0.3s border-radius, 0.3s width, 0.3s height, 0.2s font-size;
+  width: 100%;
+  padding: 0.25em;
+  background-color: white;
+  border: 1px solid #57BA98;
+  border-radius: .25em;
+  -webkit-box-shadow: 0px 0px 2px 2px inset rgba(0, 0, 0, 0.2) !important;
+          box-shadow: 0px 0px 2px 2px inset rgba(0, 0, 0, 0.2) !important;
+  color: grey;
+  text-align: center;
+  font-size: 1.5em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-line-pack: center;
+      align-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.main .__input-wrapper .mq-text-mode {
+  font-family: 'Bebas Neue', sans-serif !important;
+}
+
+.main .__input-wrapper .mf-focused {
+  color: black;
+  font-size: 2em;
+}
+
+.main .__input-wrapper .__action-bar {
+  width: calc(100% + 1em);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  position: relative;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.main .__input-wrapper .__action-bar .__help-btn {
+  position: absolute;
+  left: 0;
+  width: 1.5em;
+  height: 1.5em;
+  margin-top: .5em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 800;
+  color: #286340;
+  border: 1px solid #286340;
+  border-radius: 0.5em;
+  cursor: pointer;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.main .__input-wrapper .__action-bar .__help-btn:hover {
+  color: white;
+  border-color: white;
+}
+
+.main .__input-wrapper .__action-bar .__go-btn {
+  margin-top: 1em;
+  width: 3em;
+  border: 2px solid #286340;
+  border-radius: 0.5em;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3em;
+  color: #286340;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.main .__input-wrapper .__action-bar .__go-btn:hover {
+  color: white;
+  border-color: white;
+}
+
+.main .variables-button {
+  position: fixed;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  cursor: pointer;
+  padding: 1em;
+  border-radius: 0.5em;
+  right: 2em;
+  bottom: 2em;
+  -webkit-box-shadow: 0px 0px 2px 2px inset rgba(0, 0, 0, 0.3);
+          box-shadow: 0px 0px 2px 2px inset rgba(0, 0, 0, 0.3);
+}
+
+.main .variables-button .__image img {
+  width: 5em;
+}
+
+.main .variables-button .__text {
+  font-family: 'Epilogue', sans-serif;
+  color: #286340;
+  -webkit-transition: color 0.3s;
+  transition: color 0.3s;
+}
+
+.main .variables-button:hover > .__text {
+  color: white;
+}
+
+.main .__title-wrapper {
+  margin-top: 1em;
+  margin-bottom: 2em;
+  padding: 0.5em;
+}
+
+.main .__title-wrapper .__logo {
+  margin-left: 1em;
+}
+
+.main .__title-wrapper .__logo img {
+  width: 5em;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.main .__title-wrapper .__logo:hover > img {
+  -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);
+}
+
+.main .__title-wrapper .__title-right {
+  margin-left: 1em;
+}
+
+.main .__title-wrapper .__title-right .__title-line {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 3em;
+  line-height: 1em;
+  letter-spacing: 1px;
+  color: white;
+}
+
+.main .__title-wrapper .__title-right .__title-first-line {
+  letter-spacing: 0em;
+}
+
+.help-page {
+  display: none;
+}
+
+.help-page .help-popup {
+  position: absolute;
+  width: 25em;
+  height: 90%;
+  left: calc(50% - 12.5em);
+  top: 5%;
+  border-radius: 1em;
+  -webkit-box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.2);
+          box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.2);
+  background-color: white;
+}
+
+.help-page .help-popup .__title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2em;
+  width: 100%;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+.help-page .help-popup .__row {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+}
+
+.help-page .help-popup .__row .__command-wrapper {
+  width: 50%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.help-page .help-popup .__row .__command-wrapper .__command {
+  width: 70%;
+  text-align: center;
+  background-color: #182628;
+  border-radius: 0.5em;
+  font-family: 'Lucida Console';
+  padding: 0.25em;
+  color: white;
+}
+
+.help-page .help-popup .__row .__equivalent {
+  font-size: 1.25em;
+  width: 40%;
+  text-align: center;
+}
+
+.help-page .help-popup .__separator {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  width: 90%;
+  margin-left: 5%;
+  height: 1px;
+  background-color: grey;
+}
+
+.help-page .help-popup .__dots {
+  width: 100%;
+  text-align: center;
+  font-size: 2em;
+  line-height: 1em;
+}
+
+.help-page .help-popup .__more-disclaimer {
+  width: 100%;
+  margin-top: 2em;
+  text-align: center;
+}
+
+.help-page .help-popup .__more-disclaimer a {
+  text-decoration: none;
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+.help-page .help-popup .__more-disclaimer a:hover {
+  text-decoration: underline;
+}
+/*# sourceMappingURL=main.css.map */

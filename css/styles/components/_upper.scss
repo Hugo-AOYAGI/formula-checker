@@ -1,0 +1,60 @@
+
+
+.upper {
+
+    height: 5em;
+    display: flex;
+    justify-content: space-between;
+
+
+    & img {
+        width: 3em;
+        margin: 1em;
+    }
+
+
+    & .__links-wrapper {
+
+        display: flex;
+        align-items: center;
+
+        & .__site-links {
+            
+            & img {
+                width: 2em;
+                margin-left: 1em;
+                cursor: pointer;
+                transition: all 0.3s;
+
+                &:hover {
+                    transform: translate(0, 0.5em);
+                }
+
+            }
+
+        }
+
+        & .__vertical-separator {
+
+            height: 3em;
+            width: 2px;
+            background-color: white;
+            margin-left: 1em;
+            border-radius: 1em;
+            margin-right: 1em;
+
+        }
+
+        & .__lang {
+            
+            & img {
+                width: 2.5em;
+                margin-right: 1em;
+                cursor: pointer;
+            }
+
+        }
+
+    }
+
+}

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Formula Checker</title>
+    <link rel="icon" type="image/png" href="assets/logo/logo512.png" />
+
+    <!-- FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Epilogue:wght@100;200;300;400;500&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!-- STYLE SHEET -->
+    <link rel="stylesheet" href="./css/main.css">
+
+    <!-- MATHQUILL -->
+    <link rel="stylesheet" href="modules/mathquill/mathquill.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="modules/mathquill/mathquill.js"></script>
+
+    <!-- MATHJAX -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- SCRIPT -->
+    <script src="index.js"></script>
+
+    <script type="module">
+        import MathLive from 'https://unpkg.com/mathlive/dist/mathlive.mjs';
+        console.log(MathLive.latexToAST('e^{i\\pi}+1=0+\\vec{a}'));
+    </script>
+
+</head>
+<body>
+
+    <!-- MAIN PAGE -->
+    <div class="main-wrapper page-wrapper">
+
+        <!-- HEADER -->
+        <div class="upper">
+            
+            <img src="assets/logo/logo-light.png" alt="Logo">
+            <div class="__links-wrapper">
+                <div class="__site-links">
+                    <a href="https://github.com/Hugo-AOYAGI/"><img src="assets/icons/github.png" alt="github" class="__gh-icon"></a>
+                    <a href="https://www.patreon.com/hugoaoyagi"><img src="assets/icons/patreon.svg" alt="patreon" class="__patreon-icon"></a>
+                </div>
+                <div class="__vertical-separator">
+                </div>
+                <div class="__lang">
+                    <img src="assets/icons/uk-flag.png" alt="fr" class="__fr-flag">
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN SECTION -->
+        <div class="main">
+            <div class="__title-wrapper rows">
+                <div class="__logo">
+                    <img src="assets/logo/logo-light.png" alt="Logo">
+                </div>
+                <div class="__title-right cols">
+                    <div class="__title-first-line __title-line uppercase">Formula</div>
+                    <div class="__title-line uppercase">Checker</div>
+                </div>
+            </div>
+
+
+            <div class="__input-wrapper">
+                <div class="mathfield" id="mathfield"></div>
+                <div class="__action-bar">
+                    <div class="__help-btn">?</div>
+                    <div class="__go-btn">
+                        GO
+                    </div>
+                </div>
+            </div>
+
+            <div class="variables-button">
+                <div class="__image">
+                    <img src="assets/icons/variable-white.png" alt="">
+                </div>
+                <div class="__text uppercase">
+                    Variables
+                </div>
+            </div>
+            
+        </div>
+
+    </div>
+
+    <!-- VARIABLES PAGE -->
+    <div class="vars-wrapper page-wrapper">
+
+
+    </div>
+
+    <!-- LATEX HELP PAGE -->
+    <div class="help-page page-wrapper">
+        <div class="help-popup">
+            <div class="__title">Equations Cheat Sheet</div>
+            <div class="__commands">
+                <div class="__row">
+                    <div class="__command-wrapper"><div class="__command">\sqrt 2</div></div>
+                    <div class="__equivalent">\(\sqrt{2}\)</div>
+                </div>
+                <div class="__separator"></div>
+                <div class="__row">
+                    <div class="__command-wrapper"><div class="__command">\nthroot3 8</div></div>
+                    <div class="__equivalent">\(\sqrt[3]{8}\)</div>
+                </div>
+                <div class="__separator"></div>
+                <div class="__row">
+                    <div class="__command-wrapper"><div class="__command">\vec F</div></div>
+                    <div class="__equivalent">\(\vec{F}\)</div>
+                </div>
+                <div class="__separator"></div>
+                <div class="__row">
+                    <div class="__command-wrapper"><div class="__command">\sum</div></div>
+                    <div class="__equivalent">\(\sum\)</div>
+                </div>
+                <div class="__separator"></div>
+                <div class="__row">
+                    <div class="__command-wrapper"><div class="__command">\pi</div></div>
+                    <div class="__equivalent">\(\pi\)</div>
+                </div>
+                <div class="__separator"></div>
+                <div class="__row">
+                    <div class="__command-wrapper"><div class="__command">a^b</div></div>
+                    <div class="__equivalent">\(a^b\)</div>
+                </div>
+                <div class="__dots">...</div>
+                <div class="__more-disclaimer">
+                    <a href="https://www.overleaf.com/learn/latex/List_of_Greek_letters_and_math_symbols">More about latex syntax for equations</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</body>
+</html>

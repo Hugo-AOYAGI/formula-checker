@@ -1,0 +1,25 @@
+
+body {
+    margin: 0;
+}
+
+.page-wrapper {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+}
+
+.main-wrapper {
+    background-color: $theme-cyan;
+}
+
+.vars-wrapper {
+    display: none;
+    background-color: rgba($theme-dark-grey, 0.8);
+}
+
+.help-page {
+    background-color: rgba($theme-dark-grey, 0.4);
+}
+
+

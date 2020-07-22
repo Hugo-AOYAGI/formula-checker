@@ -1,0 +1,28 @@
+
+
+.cols {
+    display: flex;
+    flex-direction: column;
+}
+
+.rows {
+    display: flex;
+    flex-direction: row;
+}
+
+.w-fit {
+    width: fit-content;
+}
+
+.h-fit {
+    height: fit-content;
+}
+
+.all-fit {
+    width: fit-content;
+    height: fit-content;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
