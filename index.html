@@ -26,7 +26,7 @@
 
     <script type="module">
         import MathLive from 'https://unpkg.com/mathlive/dist/mathlive.mjs';
-        console.log(MathLive.latexToAST('e^{i\\pi}+1=0+\\vec{a}'));
+        console.log(MathLive.latexToAST('a-\cdot c'));
     </script>
 
 </head>
@@ -90,9 +90,80 @@
 
     <!-- VARIABLES PAGE -->
     <div class="vars-wrapper page-wrapper">
+        <div class="content-wrapper">
+            <div class="__title">
+                Your Variables
+            </div>
+
+            <div class="__vars-container">
+                <div class="__var">
+                    <div class="__sym">e</div>
+                    <div class="__name"><input type="text" value="Euler's Number"></div>
+                    <div class="__dim">∅</div>
+                </div>
+
+                <div class="__hz-separator"></div>
+
+                <div class="__var">
+                    <div class="__sym">m</div>
+                    <div class="__name"><input type="text" value="Mass"></div>
+                    <div class="__dim">M</div>
+                </div>
+
+                <div class="__hz-separator"></div>
+
+                <div class="__var">
+                    <div class="__sym">V</div>
+                    <div class="__name"><input type="text" value="Volume"></div>
+                    <div class="__dim">L<sup>3</sup></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dim-editor">
+            <div class="__dim-node">
+                <input type="number" value="0" id="L">
+                <div class="__text">L</div>
+            </div>
+            <div class="__dim-node">
+                <input type="number" value="0" id="M">
+                <div class="__text">M</div>
+            </div>
+            <div class="__dim-node">
+                <input type="number" value="0" id="T">
+                <div class="__text">T</div>
+            </div>
+            <div class="__dim-node">
+                <input type="number" value="0" id="I">
+                <div class="__text">I</div>
+            </div>
+            <div class="__dim-node">
+                <input type="number" value="0" id="\\theta">
+                <div class="__text" id="theta-text">\(\theta\)</div>
+            </div>
+            <div class="__dim-node">
+                <input type="number" value="0" id="J">
+                <div class="__text">J</div>
+            </div>
+            <div class="__dim-node">
+                <input type="number" value="0" id="N">
+                <div class="__text">N</div>
+            </div>
+        </div>
+
 
 
     </div>
+
+
+
+
+
+
+
+
+
+
 
     <!-- LATEX HELP PAGE -->
     <div class="help-page page-wrapper">

@@ -31,5 +31,13 @@ $(document).ready( () => {
         $(".help-page").css("display", "unset");
     });
 
+    $(".variables-button").on("click", () => {
+        $(".vars-wrapper").css("display", "unset");
+    });
+
+    $(".vars-wrapper").on("click", () => {
+        $(".vars-wrapper").css("display", "none");
+    });
+
 
 });
