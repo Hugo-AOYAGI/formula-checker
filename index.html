@@ -22,12 +22,7 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <!-- SCRIPT -->
-    <script src="index.js"></script>
-
-    <script type="module">
-        import MathLive from 'https://unpkg.com/mathlive/dist/mathlive.mjs';
-        console.log(MathLive.latexToAST('a-\cdot c'));
-    </script>
+    <script src="index.mjs" type="module"></script>
 
 </head>
 <body>
@@ -90,6 +85,12 @@
 
     <!-- VARIABLES PAGE -->
     <div class="vars-wrapper page-wrapper">
+
+        <div class="vars-page-close-btn">
+            <img src="assets/icons/close_btn.png" alt="">
+        </div>
+
+
         <div class="content-wrapper">
             <div class="__title">
                 Your Variables
@@ -118,6 +119,12 @@
                     <div class="__dim">L<sup>3</sup></div>
                 </div>
             </div>
+
+            <div class="__actions-container">
+                <div class="__cancel-btn __action-btn">CANCEL</div>
+                <div class="__confirm-btn __action-btn">CONFIRM</div>
+            </div>
+
         </div>
 
         <div class="dim-editor">

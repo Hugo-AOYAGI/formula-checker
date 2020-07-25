@@ -4,10 +4,14 @@
     width: 50%;
     margin-left: auto;
     margin-right: auto;
+    height: 80%;
     margin-top: 3em;
+    padding: 2em;
     display: flex;
     flex-direction: column;
     color: white;
+
+    overflow-y: auto;
 
 
     & .__title {
@@ -46,12 +50,20 @@
 
                 & input {
                     font-family: 'Roboto', sans-serif;
+                    font-weight: 300;
                     text-align: center;
                     font-size: 1.1em;
                     color: white;
                     background-color: rgba(black, 0);
                     border: none;
                     cursor: pointer;
+                    transition: all 0.3s;
+                    border-radius: 0.25em;
+                }
+
+                &:hover > input {
+                    color: #dadada;
+                    background-color: rgba(#dadada, 0.1);
                 }
 
             }
@@ -68,7 +80,7 @@
 
                 &:hover {
                     color: #dadada;
-                    background-color: rgba(#dadada, 0.1em);
+                    background-color: rgba(#dadada, 0.1);
                 }
 
             }
@@ -85,6 +97,35 @@
         }
 
     }    
+
+
+    & .__actions-container {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 4em;
+
+        & .__action-btn {
+            font-family: "Bebas Neue", sans-serif;
+            font-size: 1.25em;
+            padding: 0.25em 0.5em;
+            border: 2px solid white;
+            border-radius: 0.5em;
+
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        & .__confirm-btn:hover {
+            color: #9EF5A3;
+            border-color: #9EF5A3;
+        }
+
+        & .__cancel-btn:hover {
+            color: #E09891;
+            border-color: #E09891;
+        }
+
+    }
 
 }
 
@@ -148,5 +189,23 @@
 
     }
 
+
+}
+
+.vars-page-close-btn {
+    position: absolute;
+    right: 4em;
+    top: 4em;
+    cursor: pointer;
+
+    & img {
+        width: 3em;
+        transition: all 0.3s;
+    }
+
+    &:hover > img {
+        width: 3.2em;
+        transform: rotate(90deg);
+    }
 
 }

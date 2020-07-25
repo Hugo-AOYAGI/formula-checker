@@ -301,7 +301,7 @@ body {
 }
 
 .main .__title-wrapper .__title-right .__title-line {
-  font-family: 'Bebas Neue', cursive;
+  font-family: 'Bebas Neue', sans-serif;
   font-size: 3em;
   line-height: 1em;
   letter-spacing: 1px;
@@ -405,7 +405,9 @@ body {
   width: 50%;
   margin-left: auto;
   margin-right: auto;
+  height: 80%;
   margin-top: 3em;
+  padding: 2em;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -414,6 +416,7 @@ body {
       -ms-flex-direction: column;
           flex-direction: column;
   color: white;
+  overflow-y: auto;
 }
 
 .content-wrapper .__title {
@@ -454,12 +457,21 @@ body {
 
 .content-wrapper .__vars-container .__var .__name input {
   font-family: 'Roboto', sans-serif;
+  font-weight: 300;
   text-align: center;
   font-size: 1.1em;
   color: white;
   background-color: rgba(0, 0, 0, 0);
   border: none;
   cursor: pointer;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  border-radius: 0.25em;
+}
+
+.content-wrapper .__vars-container .__var .__name:hover > input {
+  color: #dadada;
+  background-color: rgba(218, 218, 218, 0.1);
 }
 
 .content-wrapper .__vars-container .__var .__dim {
@@ -484,6 +496,36 @@ body {
   height: 2px;
   opacity: 0.8;
   margin: 1em 0 1em 0;
+}
+
+.content-wrapper .__actions-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  margin-top: 4em;
+}
+
+.content-wrapper .__actions-container .__action-btn {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.25em;
+  padding: 0.25em 0.5em;
+  border: 2px solid white;
+  border-radius: 0.5em;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.content-wrapper .__actions-container .__confirm-btn:hover {
+  color: #9EF5A3;
+  border-color: #9EF5A3;
+}
+
+.content-wrapper .__actions-container .__cancel-btn:hover {
+  color: #E09891;
+  border-color: #E09891;
 }
 
 .dim-editor {
@@ -539,5 +581,24 @@ body {
   font-size: 0.7em;
   margin-top: 0.65em;
   margin-left: 0.25em;
+}
+
+.vars-page-close-btn {
+  position: absolute;
+  right: 4em;
+  top: 4em;
+  cursor: pointer;
+}
+
+.vars-page-close-btn img {
+  width: 3em;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.vars-page-close-btn:hover > img {
+  width: 3.2em;
+  -webkit-transform: rotate(90deg);
+          transform: rotate(90deg);
 }
 /*# sourceMappingURL=main.css.map */
