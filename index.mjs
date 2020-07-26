@@ -1,7 +1,9 @@
-import MathLive from 'https://unpkg.com/mathlive/dist/mathlive.mjs';
+import MathLive from '/modules/mathlive.mjs';
 
 
 var lang = "en";
+
+var problems = 0;
 
 // LOAD JSON
 
@@ -13,6 +15,7 @@ $.getJSON('data/dimensions.json', (data) => {
 
 
 $(document).ready( () => {
+
 
     var mathFieldSpan = document.getElementById('mathfield');
 
@@ -46,7 +49,15 @@ $(document).ready( () => {
     });
 
     $(".variables-button").on("click", () => {
+        $(".__cancel-btn").css("display", "none");
+        $(".__confirm-btn").css("display", "none");
+        $(".vars-page-close-btn").css("display", "unset");
+
+        if (mathField.latex() != "\\text{Type your formula here}") {
+            addVariablesToMenu();
+        }
         $(".vars-wrapper").css("display", "unset");
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
     });
 
     $(".vars-page-close-btn").on("click", () => {
@@ -54,14 +65,56 @@ $(document).ready( () => {
     });
 
     $(".__go-btn").on("click", () => {
-        let latex = mathField.latex();
-        console.log(latex);
-        getVariablesFromLatex(latex + " ");
-        
+        $(".vars-wrapper").css("display", "unset");
+        $(".__cancel-btn").css("display", "unset");
+        $(".__confirm-btn").css("display", "unset");
+
+        if (mathField.latex() != "\\text{Type your formula here}") {
+            addVariablesToMenu();
+        }
+        $(".vars-wrapper").css("display", "unset");
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+
+        $(".vars-page-close-btn").css("display", "none");
     });
+
+    $(".__confirm-btn").on("click", () => {
+        let tree = MathLive.latexToAST(mathField.latex());
+        problems = 0;
+        exploreTree(tree);
+
+        if (problems == 0) $(".__errors-icon").css("background-color", "green").html("✓").css("display", "flex");
+        else $(".__errors-icon").css("background-color", "red").html(problems.toString()).css("display", "flex");
+
+
+        $(".vars-wrapper").css("display", "none");
+    });
+
+    $(".__cancel-btn").on("click", () => {
+        $(".vars-wrapper").css("display", "none");
+    });
+
+    var addVariablesToMenu = () => {
+        getVariablesFromLatex(mathField.latex() + " ");
+        $(".__vars-container").html("");
+                // Display all user variables
+        for (let variable of variables) {
+            $(".__vars-container").append(`
+                <div class="__var">
+                    <div class="__sym">${variable[0]}</div>
+                    <div class="__name"><input type="text" value="${variable[1]}"></div>
+                    <div class="__dim">${dimListToStringHTML(variable[2])}</div>
+                </div>
+                <div class="__hz-separator"></div>
+            `);
+        }
+        $(".__vars-container .__hz-separator").last().remove();
+    }
+    
 
 
 });
+
 
 var variables = [];
 
@@ -136,8 +189,6 @@ var getVariablesFromLatex = (latex) => {
 
         }
 
-        
-    
     }
 
     console.log(variables);
@@ -170,10 +221,10 @@ var dimListToString = (dimList) => {
 var dimListToStringHTML = (dimList) => {
     let dimString = "";
     for (let i = 0; i < 7; i++) {
-        if (dimList[i] == 1) dimString += baseDims[i] + "."
-        else if (dimList[i] != 1 && dimList[i] != 0) dimString += baseDims[i] + "<sup>" + dimList[i].toString() + "</sup>.";
+        if (dimList[i] == 1) dimString += i != 4 ? baseDims[i] + "." : "\\(" + baseDims[i] + "\\)."
+        else if (dimList[i] != 1 && dimList[i] != 0) dimString += i != 4 ? baseDims[i] + "<sup>" + dimList[i].toString() + "</sup>." : "\\(" + baseDims[i] + "\\)" + "<sup>" + dimList[i].toString() + "</sup>.";
     } 
-    return dimString.slice(0, dimString.length - 1);
+    return dimString == "" ? "∅" : dimString.slice(0, dimString.length - 1);
 }
 
 var exploreTree = (tree) => {
@@ -187,7 +238,7 @@ var exploreTree = (tree) => {
                 // Check if arg and the next are same dimension
                 // If not, return problem
                 if (!areEqual(exploreTree(tree["arg"][i]), exploreTree(tree["arg"][i+1]))) {
-                    console.log("PROBLEM");
+                    problems++;
                 }
                 if (i == tree["arg"].length - 2) {
                     return exploreTree(tree["arg"][0]);

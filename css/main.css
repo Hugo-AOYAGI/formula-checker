@@ -59,7 +59,7 @@ body {
 
 .vars-wrapper {
   display: none;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.75);
 }
 
 .help-page {
@@ -137,6 +137,7 @@ body {
 
 .main .__input-wrapper {
   width: 40%;
+  position: relative;
 }
 
 .main .__input-wrapper .mathfield {
@@ -237,6 +238,25 @@ body {
 .main .__input-wrapper .__action-bar .__go-btn:hover {
   color: white;
   border-color: white;
+}
+
+.main .__input-wrapper .__errors-icon {
+  position: absolute;
+  right: -1.5em;
+  top: -0.5em;
+  width: 1.5em;
+  height: 1.5em;
+  background-color: red;
+  color: white;
+  font-family: "Bebas Neue", sans-serif;
+  display: none;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  border-radius: 50%;
 }
 
 .main .variables-button {
@@ -467,6 +487,7 @@ body {
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
   border-radius: 0.25em;
+  text-transform: capitalize;
 }
 
 .content-wrapper .__vars-container .__var .__name:hover > input {
@@ -529,9 +550,7 @@ body {
 }
 
 .dim-editor {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
+  display: none;
   background-color: rgba(0, 0, 0, 0.85);
   width: -webkit-fit-content;
   width: -moz-fit-content;

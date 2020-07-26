@@ -18,8 +18,20 @@
     <script src="modules/mathquill/mathquill.js"></script>
 
     <!-- MATHJAX -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> -->
+    <script async src="modules/mathjax/MathJax.js">
+        MathJax.Hub.Config({
+          jax: ["input/TeX","output/HTML-CSS"],
+          extensions: ["tex2jax.js"],
+          tex2jax: {
+            inlineMath: [ ['\\(','\\)'] ],
+            displayMath: [ ['$$','$$'] ]
+          },
+          messageStyle: "none"
+        });
+    </script>
+    <!-- <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
+    
 
     <!-- SCRIPT -->
     <script src="index.mjs" type="module"></script>
@@ -61,6 +73,10 @@
 
 
             <div class="__input-wrapper">
+
+                <div class="__errors-icon">2</div>
+
+
                 <div class="mathfield" id="mathfield"></div>
                 <div class="__action-bar">
                     <div class="__help-btn">?</div>
@@ -97,27 +113,7 @@
             </div>
 
             <div class="__vars-container">
-                <div class="__var">
-                    <div class="__sym">e</div>
-                    <div class="__name"><input type="text" value="Euler's Number"></div>
-                    <div class="__dim">∅</div>
-                </div>
-
-                <div class="__hz-separator"></div>
-
-                <div class="__var">
-                    <div class="__sym">m</div>
-                    <div class="__name"><input type="text" value="Mass"></div>
-                    <div class="__dim">M</div>
-                </div>
-
-                <div class="__hz-separator"></div>
-
-                <div class="__var">
-                    <div class="__sym">V</div>
-                    <div class="__name"><input type="text" value="Volume"></div>
-                    <div class="__dim">L<sup>3</sup></div>
-                </div>
+                
             </div>
 
             <div class="__actions-container">

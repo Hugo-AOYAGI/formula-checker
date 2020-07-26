@@ -10,6 +10,7 @@
 
     & .__input-wrapper {
         width: 40%;
+        position: relative;
 
 
         & .mathfield {
@@ -107,6 +108,24 @@
 
             }
 
+        }
+
+        & .__errors-icon {
+            position: absolute;
+            right: -1.5em;
+            top: -0.5em;
+            width: 1.5em;
+            height: 1.5em;
+            background-color: red;
+            color: white;
+
+            font-family: "Bebas Neue", sans-serif;
+
+            // display: flex;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
         }
 
     }

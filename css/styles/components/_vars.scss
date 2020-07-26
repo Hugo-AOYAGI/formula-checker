@@ -59,6 +59,7 @@
                     cursor: pointer;
                     transition: all 0.3s;
                     border-radius: 0.25em;
+                    text-transform: capitalize;
                 }
 
                 &:hover > input {
@@ -132,7 +133,8 @@
 
 .dim-editor {
 
-    display: flex;
+    // display: flex;
+    display: none;
     background-color: rgba(black, 0.85);
     width: fit-content;
     padding: 0.5em;

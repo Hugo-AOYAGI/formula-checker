@@ -30,7 +30,8 @@
             "none": "",
             "angle": "",
             "pulsation": "T^-1",
-            "entropy": "M.L^2.T^-2.\\theta^-1"
+            "entropy": "M.L^2.T^-2.\\theta^-1",
+            "solubility": "M.L^-3"
         },
         "defaults": {
             "acceleration": ["a"],
@@ -62,7 +63,8 @@
             "none": ["e"],
             "angle": ["\\theta", "\\phi", "\\alpha", "\\beta"],
             "pulsation": ["omega"],
-            "entropy": ["S"]
+            "entropy": ["S"],
+            "solubility": ["s"]
             
         }
     },
@@ -98,7 +100,8 @@
             "none": "",
             "angle": "",
             "pulsation": "T^-1",
-            "entropie": "M.L^2.T^-2.\\theta^-1"
+            "entropie": "M.L^2.T^-2.\\theta^-1",
+            "solubilité": "M.L^-3"
         },
 
         "defaults": {
@@ -131,7 +134,8 @@
             "none": ["e"],
             "angle": ["\\theta", "\\phi", "\\alpha", "\\beta"],
             "pulsation": ["omega"],
-            "entropie": ["S"]
+            "entropie": ["S"],
+            "solubilité": ["s"]
             
         }
     }
