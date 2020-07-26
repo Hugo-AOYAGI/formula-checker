@@ -154,7 +154,7 @@ var getVariablesFromLatex = (latex) => {
 
 
     // Get other vars
-    let vars_string = new_latex.replace(/\\\w+/g, "").replace(/[\^\{\}\+\-]/g, "").replace(" ", "").replace(/[0-9]/g, "");
+    let vars_string = new_latex.replace(/\\\w+/g, "").replace(/[\^\{\}\+\-\=]/g, "").replace(" ", "").replace(/[0-9]/g, "");
     let symbols = [...new Set(vars_string.split(""))].concat(subVars);
 
 
@@ -221,8 +221,8 @@ var dimListToString = (dimList) => {
 var dimListToStringHTML = (dimList) => {
     let dimString = "";
     for (let i = 0; i < 7; i++) {
-        if (dimList[i] == 1) dimString += i != 4 ? baseDims[i] + "." : "\\(" + baseDims[i] + "\\)."
-        else if (dimList[i] != 1 && dimList[i] != 0) dimString += i != 4 ? baseDims[i] + "<sup>" + dimList[i].toString() + "</sup>." : "\\(" + baseDims[i] + "\\)" + "<sup>" + dimList[i].toString() + "</sup>.";
+        if (dimList[i] == 1) dimString += i != 4 ? baseDims[i] + "." : "θ.";
+        else if (dimList[i] != 1 && dimList[i] != 0) dimString += i != 4 ? baseDims[i] + "<sup>" + dimList[i].toString() + "</sup>." : "θ" + "<sup>" + dimList[i].toString() + "</sup>.";
     } 
     return dimString == "" ? "∅" : dimString.slice(0, dimString.length - 1);
 }
