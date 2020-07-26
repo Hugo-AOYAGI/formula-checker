@@ -259,6 +259,10 @@ body {
   border-radius: 50%;
 }
 
+.main .__input-wrapper .__errors-icon img {
+  width: 1em;
+}
+
 .main .variables-button {
   position: fixed;
   display: -webkit-box;
@@ -517,6 +521,14 @@ body {
   height: 2px;
   opacity: 0.8;
   margin: 1em 0 1em 0;
+}
+
+.content-wrapper .__vars-container .__no-vars-disclaimer {
+  font-family: "Epilogue", sans-serif;
+  font-size: 1.3em;
+  font-weight: 200;
+  width: 100%;
+  text-align: center;
 }
 
 .content-wrapper .__actions-container {

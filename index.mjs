@@ -5,6 +5,9 @@ var lang = "en";
 
 var problems = 0;
 
+var greekAlphabetLatex = ["\\alpha", "\\beta", "\\gamma", "\\Gamma", "\\delta", "\\Delta", "\\epsilon", "\\zeta", "\\eta", "\\theta", "\\Theta", "\\iota", "\\kappa", "\\lambda", "\\Lambda", "\\mu", "\\nu", "\\xi", "\\Xi", "\\pi", "\\Pi", "\\rho", "\\varrho", "\\sigma", "\\Sigma", "\\tau", "\\upsilon", "\\Upsilon", "\\varphi", "\\phi", "\\Phi", "\\chi", "\\psi", "\\Psi", "\\omega", "\\Omega", "\\vartheta", "\\varepsilon"];
+var greekAlphabetChar = ["α", "β", "γ", "Γ", "δ", "Δ", "ϵ", "ζ", "η", "θ", "Θ", "ι", "κ", "λ", "Λ", "μ", "ν", "ξ", "Ξ", "π", "Π", "ρ", "ϱ", "σ", "Σ", "τ", "υ", "ϒ", "ϕ", "φ", "Φ", "χ", "ψ", "Ψ", "ω", "Ω", "ϑ", "ε"]
+
 // LOAD JSON
 
 var defaultDims = [];
@@ -55,7 +58,15 @@ $(document).ready( () => {
 
         if (mathField.latex() != "\\text{Type your formula here}") {
             addVariablesToMenu();
+        } else if (variables.length == 0) {
+            $(".__vars-container").html("");
+            $(".__vars-container").append(`
+                <div class="__no-vars-disclaimer">
+                    No variables Yet
+                </div>
+            `);
         }
+
         $(".vars-wrapper").css("display", "unset");
         MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
     });
@@ -65,13 +76,20 @@ $(document).ready( () => {
     });
 
     $(".__go-btn").on("click", () => {
-        $(".vars-wrapper").css("display", "unset");
-        $(".__cancel-btn").css("display", "unset");
-        $(".__confirm-btn").css("display", "unset");
 
         if (mathField.latex() != "\\text{Type your formula here}") {
             addVariablesToMenu();
         }
+
+        if (variables.length == 0) {
+            alert("You have no variables yet !");
+            return;
+        }
+
+        $(".vars-wrapper").css("display", "unset");
+        $(".__cancel-btn").css("display", "unset");
+        $(".__confirm-btn").css("display", "unset");
+
         $(".vars-wrapper").css("display", "unset");
         MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
@@ -83,8 +101,8 @@ $(document).ready( () => {
         problems = 0;
         exploreTree(tree);
 
-        if (problems == 0) $(".__errors-icon").css("background-color", "green").html("✓").css("display", "flex");
-        else $(".__errors-icon").css("background-color", "red").html(problems.toString()).css("display", "flex");
+        if (problems == 0) $(".__errors-icon").css("background-color", "#57DE90").html("<img src='assets/icons/check-mark.png'>").css("display", "flex");
+        else $(".__errors-icon").css("background-color", "#D1675C").html(problems.toString()).css("display", "flex");
 
 
         $(".vars-wrapper").css("display", "none");
@@ -99,15 +117,27 @@ $(document).ready( () => {
         $(".__vars-container").html("");
                 // Display all user variables
         for (let variable of variables) {
-            $(".__vars-container").append(`
+            let template = `
                 <div class="__var">
                     <div class="__sym">${variable[0]}</div>
                     <div class="__name"><input type="text" value="${variable[1]}"></div>
                     <div class="__dim">${dimListToStringHTML(variable[2])}</div>
                 </div>
                 <div class="__hz-separator"></div>
+            `;
+            for (let j = 0; j < greekAlphabetLatex.length; j++) {
+                template = template.replace(greekAlphabetLatex[j], greekAlphabetChar[j]);
+            }
+            $(".__vars-container").append(template);
+        }
+        if (variables.length == 0) {
+            $(".__vars-container").append(`
+                <div class="__no-vars-disclaimer">
+                    No variables Yet
+                </div>
             `);
         }
+
         $(".__vars-container .__hz-separator").last().remove();
     }
     
@@ -162,6 +192,7 @@ var getVariablesFromLatex = (latex) => {
     for (let symbol of symbols) {
 
         if (symbol == null) continue;
+        if (symbol == " ") continue;
 
         let alreadyExists = false;
         for (let variable of variables) {
@@ -174,10 +205,19 @@ var getVariablesFromLatex = (latex) => {
 
             let var_list = [symbol];
             for (let name of Object.keys(defaultDims[lang]["defaults"])) {
-                if (defaultDims[lang]["defaults"][name].includes(symbol) || defaultDims[lang]["defaults"][name].includes(symbol.split("_")[0])) {
+                if (defaultDims[lang]["defaults"][name].includes(symbol)) {
                     var_list.push(name);
                     var_list.push(dimStringToList(defaultDims[lang]["units"][name]));
                     break;
+                }
+            }
+            if (var_list.length == 1) {
+                for (let name of Object.keys(defaultDims[lang]["defaults"])) {
+                    if (defaultDims[lang]["defaults"][name].includes(symbol.split("_")[0])) {
+                        var_list.push(name);
+                        var_list.push(dimStringToList(defaultDims[lang]["units"][name]));
+                        break;
+                    }
                 }
             }
             if (var_list.length == 1) {
