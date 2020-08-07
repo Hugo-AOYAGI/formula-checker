@@ -16,8 +16,7 @@
         & .mathfield {
 
             transition: 0.3s border-radius, 0.3s width, 0.3s height, 0.2s font-size;
-    
-            width: 100%;
+            width: calc(100%- 0.5em);
             // height: 3em;
             padding: 0.25em;
     
@@ -112,7 +111,7 @@
 
         & .__errors-icon {
             position: absolute;
-            right: -1.5em;
+            right: -0.5em;
             top: -0.5em;
             width: 1.5em;
             height: 1.5em;
@@ -130,6 +129,42 @@
             & img {
                 width: 1em;
             }
+
+        }
+
+        & .__issues-board {
+            width: calc(100% - 1em);
+            display: none;
+            padding: 0.5em;
+            background-color: white;
+            border-radius: 0.25em;
+
+            box-shadow: 0px 0px 2px 2px inset rgba(black, 0.1);
+
+            & .__issue {
+                border-radius: 0.15em;
+                // padding: 0.15em;
+                padding-left: 1em;
+                margin-bottom: 0.5em;
+                margin-top: 0.5em;
+                border-left: 2px solid grey;
+
+                font-family: "Epilogue", sans-serif;
+
+            }
+
+            & .__issue-pb {
+                border-color: #A84A60;
+            }
+
+            & .__issue-ok {
+                border-color: #11A627;
+            }
+
+            & .__separator {
+                border-bottom: .5px solid grey;
+            }
+
 
         }
 
@@ -205,8 +240,6 @@
             .__title-first-line {
                 letter-spacing: 0em;
             }
-
-
         }
 
     }

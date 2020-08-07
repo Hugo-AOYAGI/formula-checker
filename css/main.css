@@ -143,7 +143,7 @@ body {
 .main .__input-wrapper .mathfield {
   -webkit-transition: 0.3s border-radius, 0.3s width, 0.3s height, 0.2s font-size;
   transition: 0.3s border-radius, 0.3s width, 0.3s height, 0.2s font-size;
-  width: 100%;
+  width: calc(100%- 0.5em);
   padding: 0.25em;
   background-color: white;
   border: 1px solid #57BA98;
@@ -242,7 +242,7 @@ body {
 
 .main .__input-wrapper .__errors-icon {
   position: absolute;
-  right: -1.5em;
+  right: -0.5em;
   top: -0.5em;
   width: 1.5em;
   height: 1.5em;
@@ -261,6 +261,37 @@ body {
 
 .main .__input-wrapper .__errors-icon img {
   width: 1em;
+}
+
+.main .__input-wrapper .__issues-board {
+  width: calc(100% - 1em);
+  display: none;
+  padding: 0.5em;
+  background-color: white;
+  border-radius: 0.25em;
+  -webkit-box-shadow: 0px 0px 2px 2px inset rgba(0, 0, 0, 0.1);
+          box-shadow: 0px 0px 2px 2px inset rgba(0, 0, 0, 0.1);
+}
+
+.main .__input-wrapper .__issues-board .__issue {
+  border-radius: 0.15em;
+  padding-left: 1em;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+  border-left: 2px solid grey;
+  font-family: "Epilogue", sans-serif;
+}
+
+.main .__input-wrapper .__issues-board .__issue-pb {
+  border-color: #A84A60;
+}
+
+.main .__input-wrapper .__issues-board .__issue-ok {
+  border-color: #11A627;
+}
+
+.main .__input-wrapper .__issues-board .__separator {
+  border-bottom: .5px solid grey;
 }
 
 .main .variables-button {
@@ -479,6 +510,10 @@ body {
   text-align: center;
 }
 
+.content-wrapper .__vars-container .__var .__name {
+  width: 60%;
+}
+
 .content-wrapper .__vars-container .__var .__name input {
   font-family: 'Roboto', sans-serif;
   font-weight: 300;
@@ -492,6 +527,7 @@ body {
   transition: all 0.3s;
   border-radius: 0.25em;
   text-transform: capitalize;
+  width: 100%;
 }
 
 .content-wrapper .__vars-container .__var .__name:hover > input {
@@ -631,5 +667,42 @@ body {
   width: 3.2em;
   -webkit-transform: rotate(90deg);
           transform: rotate(90deg);
+}
+
+.search-results {
+  position: absolute;
+  width: 29.25%;
+  display: none;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  left: 35%;
+  top: 30%;
+  background-color: white;
+  padding: 0.5em;
+  border-radius: 0.5em;
+}
+
+.search-results .__result {
+  color: black;
+  border-bottom: 0.1px solid black;
+  padding-bottom: 0.25em;
+  width: 100%;
+  margin-bottom: 0.25em;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  text-transform: capitalize;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.search-results .__result:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.search-results .__result:last-of-type {
+  margin-bottom: 0;
+  border-bottom: none;
 }
 /*# sourceMappingURL=main.css.map */

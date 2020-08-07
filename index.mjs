@@ -5,6 +5,10 @@ var lang = "en";
 
 var problems = 0;
 
+var problem_details = [];
+
+var selected_variable = "";
+
 var greekAlphabetLatex = ["\\alpha", "\\beta", "\\gamma", "\\Gamma", "\\delta", "\\Delta", "\\epsilon", "\\zeta", "\\eta", "\\theta", "\\Theta", "\\iota", "\\kappa", "\\lambda", "\\Lambda", "\\mu", "\\nu", "\\xi", "\\Xi", "\\pi", "\\Pi", "\\rho", "\\varrho", "\\sigma", "\\Sigma", "\\tau", "\\upsilon", "\\Upsilon", "\\varphi", "\\phi", "\\Phi", "\\chi", "\\psi", "\\Psi", "\\omega", "\\Omega", "\\vartheta", "\\varepsilon"];
 var greekAlphabetChar = ["α", "β", "γ", "Γ", "δ", "Δ", "ϵ", "ζ", "η", "θ", "Θ", "ι", "κ", "λ", "Λ", "μ", "ν", "ξ", "Ξ", "π", "Π", "ρ", "ϱ", "σ", "Σ", "τ", "υ", "ϒ", "ϕ", "φ", "Φ", "χ", "ψ", "Ψ", "ω", "Ω", "ϑ", "ε"]
 
@@ -97,38 +101,109 @@ $(document).ready( () => {
     });
 
     $(".__confirm-btn").on("click", () => {
+
         let tree = MathLive.latexToAST(mathField.latex());
+
         problems = 0;
-        exploreTree(tree);
+        problem_details = [];
 
-        if (problems == 0) $(".__errors-icon").css("background-color", "#57DE90").html("<img src='assets/icons/check-mark.png'>").css("display", "flex");
-        else $(".__errors-icon").css("background-color", "#D1675C").html(problems.toString()).css("display", "flex");
+        let globalDim = exploreTree(tree);
 
+        $(".__issues-board").empty();
 
+        if (problems == 0) {
+            $(".__errors-icon").css("background-color", "#57DE90").html("<img src='assets/icons/check-mark.png'>").css("display", "flex");
+            $(".__issues-board").append(`<div class="__issue __issue-ok">
+                The dimension of the whole equation is ${dimListToStringHTML(globalDim)}.
+            </div>`);
+        }
+        else {
+            $(".__errors-icon").css("background-color", "#D1675C").html(problems.toString()).css("display", "flex");
+
+            for (let i = 0; i < problem_details.length; i++) {
+                $(".__issues-board").append(`<div class="__issue __issue-pb">
+                    \\(${problem_details[i][0]}\\) (${dimListToStringHTML(problem_details[i][2])}) and \\(${problem_details[i][1]}\\) (${dimListToStringHTML(problem_details[i][3])}) are not of the same dimension.
+                </div>`);
+
+                if (i != problem_details.length - 1) {
+                    $(".__issues-board").append(`<div class="__separator"></div>`);
+                }
+            }
+        }
+
+        $(".__issues-board").css("display", "flex");
         $(".vars-wrapper").css("display", "none");
+        console.log("Rendering Math");
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
     });
 
     $(".__cancel-btn").on("click", () => {
         $(".vars-wrapper").css("display", "none");
     });
 
+    $(".vars-wrapper").on("click", (evt) => {
+        if (!$(evt.target).hasClass("__dim") && !$(evt.target).hasClass("dim-editor") && $(evt.target).parents(".__dim").length == 0 && $(evt.target).parents(".dim-editor").length == 0) {
+            updateVariableName();
+            $(".dim-editor").css("display", "none");
+        }
+    });
+
+    $(".vars-wrapper").on("click", (evt) => {
+        if (!$(evt.target).hasClass("__name") && !$(evt.target).hasClass("search-results") && $(evt.target).parents(".__name").length == 0 && $(evt.target).parents(".search-results").length == 0) {
+            $(".search-results").css("display", "none");
+        }
+    });
+
+    for (let i=0; i<baseDims.length; i++) {
+        $("#" + (baseDims[i] == "\\theta" ?  "theta" : baseDims[i]) + "-node").on("input", (evt) => {
+            for (let variable of variables) {
+                
+                let new_val = $(evt.target).val() == "" ? 0 : $(evt.target).val();
+
+                if (variable[0] == selected_variable) {
+                    variable[2][i] = parseInt(new_val);
+
+                    let html_sym = (greekAlphabetLatex.indexOf(variable[0]) == -1 ? variable[0] : greekAlphabetChar[greekAlphabetLatex.indexOf(variable[0])]).replace("{", ":bl:").replace("}", ":br:");
+
+                    $("#var-" + html_sym + "-dim").html(dimListToStringHTML(variable[2]));
+
+                    break;
+                }
+            }
+        });
+    }
+
+
     var addVariablesToMenu = () => {
         getVariablesFromLatex(mathField.latex() + " ");
         $(".__vars-container").html("");
                 // Display all user variables
         for (let variable of variables) {
+            let html_sym = (greekAlphabetLatex.indexOf(variable[0]) == -1 ? variable[0] : greekAlphabetChar[greekAlphabetLatex.indexOf(variable[0])]).replace("{", ":bl:").replace("}", ":br:");
             let template = `
-                <div class="__var">
-                    <div class="__sym">${variable[0]}</div>
-                    <div class="__name"><input type="text" value="${variable[1]}"></div>
-                    <div class="__dim">${dimListToStringHTML(variable[2])}</div>
+                <div class="__var" id="var-${html_sym}">
+                    <div class="__sym">${html_sym.replace(":bl:", "{").replace(":br:", "}")}</div>
+                    <div class="__name"><input type="text" value="${variable[1]}" id="var-${html_sym}-name" autocomplete="off"></div>
+                    <div class="__dim" id="var-${html_sym}-dim">${dimListToStringHTML(variable[2])}</div>
                 </div>
                 <div class="__hz-separator"></div>
             `;
-            for (let j = 0; j < greekAlphabetLatex.length; j++) {
-                template = template.replace(greekAlphabetLatex[j], greekAlphabetChar[j]);
-            }
+    
+            // Listeners
             $(".__vars-container").append(template);
+            $("#var-" + html_sym + "-dim").on("click", (evt) => {
+
+                updateVariableName();
+
+                selected_variable = variable[0];
+                showDimEditor(evt);
+            });
+
+            $("#var-" + html_sym + "-name").on("input", (evt) => {
+                selected_variable = variable[0];
+                showSearchResults(evt);
+            });
+
         }
         if (variables.length == 0) {
             $(".__vars-container").append(`
@@ -140,28 +215,122 @@ $(document).ready( () => {
 
         $(".__vars-container .__hz-separator").last().remove();
     }
-    
 
+    var updateVariableName = () => {
+        if (selected_variable != "") {
+            for (let variable_ of variables) {
+                if (variable_[0] == selected_variable) {
+                    for (let unit of Object.keys(defaultDims[lang]["units"])) {
+                        if (areEqual(dimStringToList(defaultDims[lang]["units"][unit]), variable_[2])) {
+                            variable_[1] = unit;
+
+                            let html_id = (greekAlphabetLatex.indexOf(variable_[0]) == -1 ? variable_[0] : greekAlphabetChar[greekAlphabetLatex.indexOf(variable_[0])]).replace("{", ":bl:").replace("}", ":br:");
+                            $("#var-" + html_id + "-name").val(unit);
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    var showDimEditor = (evt) => {
+
+        let dimList = [];
+        for (let variable of variables) {
+            if (variable[0] == selected_variable) {
+                dimList = variable[2];
+                break;
+            }
+        }
+
+        for (let i=0; i<dimList.length; i++) {
+            $("#" + baseDims[i] + "-node").val(dimList[i]);
+        }
+
+        $(".dim-editor").css("display", "flex").css("top", ($(evt.target).position()["top"] + 30).toString() + "px");
+
+    }
+    
+    var showSearchResults = (evt) => {
+
+        let input_value = $(evt.target).val().replace(" ", "").toLowerCase();
+
+        if (input_value == "") {
+            $(".search-results").css("display", "none");
+            return;
+        }
+
+        let matches = findMatches(input_value);
+
+        $(".search-results").empty();
+
+        for (let res of matches) {
+            $(".search-results").append(`
+                <div class="__result">${res}</div>
+            `);
+        }
+
+        $(".search-results").append(`
+                <div class="__result">Other</div>
+        `);
+
+        $(".__result").click((evt) => {
+            console.log($(evt.target).html());
+            for (let variable of variables) {
+                if (variable[0] == selected_variable) {
+                    if ($(evt.target).html() == "Other") {
+                        variable[1] = $("#var-" + selected_variable.replace("{", "\\:bl\\:").replace("}", "\\:br\\:") + "-name").val().toLowerCase()
+                    } else {
+                        variable[1] = $(evt.target).html().toLowerCase()
+                        $("#var-" + selected_variable.replace("{", "\\:bl\\:").replace("}", "\\:br\\:") + "-name").val($(evt.target).html());
+
+                        variable[2] = dimStringToList(defaultDims[lang]["units"][$(evt.target).html().toLowerCase()]);
+                        $("#var-" + selected_variable.replace("{", "\\:bl\\:").replace("}", "\\:br\\:") + "-dim").html(dimListToStringHTML(variable[2]));
+                    }
+                    $(".search-results").css("display", "none");
+                    break;
+                }
+            }
+        });
+
+
+        $(".search-results").css("display", "flex").css("top", ($(evt.target).position()["top"] + 30).toString() + "px");
+                
+    }
+
+    var findMatches = (pattern) => {
+        let matches = []
+        for (let variable of Object.keys(defaultDims[lang]["units"])) {
+            if (variable.startsWith(pattern)) {
+                matches.push(variable);
+            }
+        }
+        return matches;
+    }
 
 });
 
 
 var variables = [];
 
-var greekAlphabet = ["\\alpha", "\\beta", "\\gamma", "\\Gamma", "\\delta", "\\Delta", "\\epsilon", "\\varepsilon", "\\zeta", "\\eta", "\\theta", "\\vartheta", "\\Theta", "\\iota", "\\kappa", "\\lambda", "\\Lambda", "\\mu", "\\nu", "\\xi", "\\Xi", "\\pi", "\\Pi", "\\rho", "\\varrho", "\\sigma", "\\Sigma", "\\tau", "\\upsilon", "\\Upsilon", "\\phi", "\\varphi", "\\Phi", "\\chi", "\\psi", "\\Psi", "\\omega", "\\Omega"];
 
 var getVariablesFromLatex = (latex) => {
     // Find vars with sub attribute for instance V_1 or x_{eq} as well as greek letters
     let subVars = [];
 
-    for (let letter of greekAlphabet) {
+    for (let letter of greekAlphabetLatex) {
         let greekMatch = latex.match(RegExp("\\" + letter + "[^_]", "g"));
         if (greekMatch != null) {
             for (let match of greekMatch) {
                 subVars.push(match.slice(0, match.length - 1));
             }
         }
-        let subGreekMatch = latex.match(RegExp("\\" + letter + "_[a-zA-Z1-9\\{\\}]", "g"));
+        let subGreekMatch = latex.match(RegExp("\\" + letter + "_[a-zA-Z1-9]", "g"));
+        if (subGreekMatch != null) subGreekMatch = subGreekMatch.concat(latex.match(RegExp("\\" + letter + "_\\{[a-zA-Z1-9]+\\}", "g")));
+        else subGreekMatch = latex.match(RegExp("\\" + letter + "_\\{[a-zA-Z1-9]+\\}", "g"));
+        
         if (subGreekMatch != null) {
             subVars = subVars.concat(subGreekMatch);
         }
@@ -176,7 +345,8 @@ var getVariablesFromLatex = (latex) => {
         new_latex = latex.replace(subvar, "");
     }
 
-    subVars = subVars.concat(new_latex.match(/[a-zA-Z]_[a-zA-Z1-9\{\}]+/g));
+    subVars = subVars.concat(new_latex.match(/[a-zA-Z]_[a-zA-Z1-9]/g));
+    subVars = subVars.concat(new_latex.match(/[a-zA-Z]_\{[a-zA-Z1-9]+\}/g));
 
     for (let subvar of subVars) {
         new_latex = new_latex.replace(subvar, "");
@@ -184,7 +354,7 @@ var getVariablesFromLatex = (latex) => {
 
 
     // Get other vars
-    let vars_string = new_latex.replace(/\\\w+/g, "").replace(/[\^\{\}\+\-\=]/g, "").replace(" ", "").replace(/[0-9]/g, "");
+    let vars_string = new_latex.replace(/\\\w+/g, "").replace(/[\^\{\}\+\-\=\(\)\[\]]/g, "").replace(" ", "").replace(/[0-9]/g, "");
     let symbols = [...new Set(vars_string.split(""))].concat(subVars);
 
 
@@ -277,29 +447,33 @@ var exploreTree = (tree) => {
             for (let i=0; i < tree["arg"].length - 1; i++) { 
                 // Check if arg and the next are same dimension
                 // If not, return problem
-                if (!areEqual(exploreTree(tree["arg"][i]), exploreTree(tree["arg"][i+1]))) {
+                let dim1 = exploreTree(tree["arg"][i]), dim2 = exploreTree(tree["arg"][i+1]);
+                if (!areEqual(dim1, dim2)) { 
                     problems++;
-                }
+                    problem_details.push([MathLive.astToLatex(tree["arg"][i]), MathLive.astToLatex(tree["arg"][i+1]), dim1, dim2]);
+                } 
+                
                 if (i == tree["arg"].length - 2) {
                     return exploreTree(tree["arg"][0]);
                 }
             }
 
+
         // If multiply, return sum of all dimensions
         } else if (tree["fn"] == "multiply") {
-            return sumDim(tree);
+            return (Object.keys(tree).includes("sup")) ? multDim(sumDim(tree), getVal(tree["sup"])) : sumDim(tree);
         // If divide, return substraction of dimensions
         } else if (tree["fn"] == "divide") {
-            return subDim(exploreTree(tree["arg"][0]), exploreTree(tree["arg"][1]));
+            return (Object.keys(tree).includes("sup")) ? multDim(subDim(exploreTree(tree["arg"][0]), exploreTree(tree["arg"][1])), getVal(tree["sup"])) : subDim(exploreTree(tree["arg"][0]), exploreTree(tree["arg"][1]));
         // If negate, return same dimension
         } else if (tree["fn"] == "negate") {
-            return exploreTree(tree["arg"][0])
+            return (Object.keys(tree).includes("sup")) ? multDim(exploreTree(tree["arg"][0]), getVal(tree["sup"])) : exploreTree(tree["arg"][0]);
         // If sqrt, return halved dimension
         } else if (tree["fn"] == "sqrt") {
-            return multDim(exploreTree(tree["arg"][0]), 0.5);
+            return (Object.keys(tree).includes("sup")) ? multDim(multDim(exploreTree(tree["arg"][0]), 0.5), getVal(tree["sup"])) : multDim(exploreTree(tree["arg"][0]), 0.5);
         // If pow, multiply dim by power
         } else if (tree["fn"] == "pow") {
-            return multDim(exploreTree(tree["arg"][0]), getVal(tree["arg"][1]));
+            return (Object.keys(tree).includes("sup")) ? multDim(multDim(exploreTree(tree["arg"][0]), getVal(tree["arg"][1])), getVal(tree["sup"])) : multDim(exploreTree(tree["arg"][0]), getVal(tree["arg"][1]));
         }
 
     // If symbol, return dimension of symbol
@@ -319,8 +493,18 @@ var exploreTree = (tree) => {
 }
 
 var dimOf = (name) => {
+    let real_name = name;
+
+    for (let j = 0; j < greekAlphabetChar.length; j ++) {
+        if (name == greekAlphabetChar[j]) {
+            real_name = greekAlphabetLatex[j];
+            break;
+        }
+    }
+
+
     for (let variable of variables) {
-        if (variable[0] == name) return variable[2];
+        if (variable[0] == real_name) return variable[2];
     }
 }
 
@@ -407,3 +591,4 @@ var getVal = (tree) => {
         return parseInt(tree["num"]);
     }
 }
+

@@ -19,7 +19,24 @@
 
     <!-- MATHJAX -->
     <!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> -->
-    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML"></script>
+    <!-- <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML"></script> -->
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          extensions: ["tex2jax.js"],
+          jax: ["input/TeX", "output/HTML-CSS"],
+          tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+            processEscapes: true
+          },
+          "HTML-CSS": { fonts: ["TeX"] }
+        });
+    </script>
+    
+    <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js">
+    </script>
+    
     <!-- <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
     
 
@@ -68,6 +85,11 @@
 
 
                 <div class="mathfield" id="mathfield"></div>
+
+                <div class="__issues-board">
+                    
+                </div>
+
                 <div class="__action-bar">
                     <div class="__help-btn">?</div>
                     <div class="__go-btn">
@@ -115,35 +137,39 @@
 
         <div class="dim-editor">
             <div class="__dim-node">
-                <input type="number" value="0" id="L">
+                <input type="number" value="0" id="L-node">
                 <div class="__text">L</div>
             </div>
             <div class="__dim-node">
-                <input type="number" value="0" id="M">
+                <input type="number" value="0" id="M-node">
                 <div class="__text">M</div>
             </div>
             <div class="__dim-node">
-                <input type="number" value="0" id="T">
+                <input type="number" value="0" id="T-node">
                 <div class="__text">T</div>
             </div>
             <div class="__dim-node">
-                <input type="number" value="0" id="I">
+                <input type="number" value="0" id="I-node">
                 <div class="__text">I</div>
             </div>
             <div class="__dim-node">
-                <input type="number" value="0" id="\\theta">
+                <input type="number" value="0" id="theta-node">
                 <div class="__text" id="theta-text">\(\theta\)</div>
             </div>
             <div class="__dim-node">
-                <input type="number" value="0" id="J">
+                <input type="number" value="0" id="J-node">
                 <div class="__text">J</div>
             </div>
             <div class="__dim-node">
-                <input type="number" value="0" id="N">
+                <input type="number" value="0" id="N-node">
                 <div class="__text">N</div>
             </div>
         </div>
 
+        <div class="search-results">
+            <div class="__result">Solubility</div>
+            <div class="__result">Stiffness</div>
+        </div>
 
 
     </div>

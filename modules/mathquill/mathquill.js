@@ -2629,9 +2629,11 @@ var MathCommand = P(MathElement, function(_, super_) {
         } while (nesting > 0);
       }
     }
+
     return tokens.join('').replace(/>&(\d+)/g, function($0, $1) {
       return ' mathquill-block-id=' + blocks[$1].id + '>' + blocks[$1].join('html');
     });
+    
   };
 
   // methods to export a string representation of the math tree
