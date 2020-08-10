@@ -9,9 +9,13 @@
     align-items: center;
 
     & .__input-wrapper {
-        width: 40%;
         position: relative;
 
+        width: 30em;
+
+        @media screen and (max-width: 650px) {
+            width: 100%;
+        } 
 
         & .mathfield {
 
@@ -32,6 +36,10 @@
             display: flex;
             align-content: center;
             align-items: center;
+
+            @media screen and (max-width: 650px) {
+                border-radius: 0;
+            } 
             
     
         }
@@ -73,6 +81,10 @@
                 cursor: pointer;
 
                 transition: all 0.3s;
+
+                @media screen and (max-width: 850px) {
+                    left: 0.5em;
+                }
 
                 &:hover {
                     color: white;
@@ -126,6 +138,10 @@
             align-items: center;
             border-radius: 50%;
 
+            @media screen and (max-width: 650px) {
+                right: 0.5em;
+            }
+
             & img {
                 width: 1em;
             }
@@ -135,6 +151,7 @@
         & .__issues-board {
             width: calc(100% - 1em);
             display: none;
+            flex-direction: column;
             padding: 0.5em;
             background-color: white;
             border-radius: 0.25em;
@@ -184,6 +201,13 @@
         bottom: 2em;
 
         box-shadow: 0px 0px 2px 2px inset rgba(black, 0.3);
+
+        @media screen and (max-width: 850px) {
+            right: 1em;
+            bottom: 1em;
+            padding: 0.5em;
+
+        }
 
         & .__image {
             

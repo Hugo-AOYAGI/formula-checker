@@ -1,12 +1,41 @@
 
 body {
     margin: 0;
+    font-size: 110%;
+
+
+    @include rwd-less(1000) {
+        font-size: 2vh;
+    }
+
+    @include xl {
+        font-size: 110%;
+    }
+
+    @include rwd(1400) {
+        font-size: 120%;
+    }
+
+    @include rwd(1600) {
+        font-size: 130%;
+    }
+
+    @include rwd(1800) {
+        font-size: 140%;
+    }
+
+    @include rwd(2000) {
+        font-size: 150%;
+    }
+    
 }
+
 
 .page-wrapper {
     height: 100%;
     width: 100%;
-    position: fixed;
+    position: absolute;
+    overflow: hidden;
 }
 
 .main-wrapper {

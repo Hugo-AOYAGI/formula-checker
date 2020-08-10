@@ -13,6 +13,10 @@
 
     overflow-y: auto;
 
+    @media screen and (min-width: 300px) and (max-width: 950px) {
+        width: 80%;
+    }
+
 
     & .__title {
 
@@ -214,6 +218,11 @@
     right: 4em;
     top: 4em;
     cursor: pointer;
+
+    @media screen and (max-width: 850px) {
+        right: 1em;
+        top: 1em;
+    }
 
     & img {
         width: 3em;

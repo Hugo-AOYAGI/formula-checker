@@ -45,12 +45,50 @@
 
 body {
   margin: 0;
+  font-size: 110%;
+}
+
+@media (max-width: 1000px) {
+  body {
+    font-size: 2vh;
+  }
+}
+
+@media (min-width: 1200px) {
+  body {
+    font-size: 110%;
+  }
+}
+
+@media (min-width: 1400px) {
+  body {
+    font-size: 120%;
+  }
+}
+
+@media (min-width: 1600px) {
+  body {
+    font-size: 130%;
+  }
+}
+
+@media (min-width: 1800px) {
+  body {
+    font-size: 140%;
+  }
+}
+
+@media (min-width: 2000px) {
+  body {
+    font-size: 150%;
+  }
 }
 
 .page-wrapper {
   height: 100%;
   width: 100%;
-  position: fixed;
+  position: absolute;
+  overflow: hidden;
 }
 
 .main-wrapper {
@@ -79,6 +117,12 @@ body {
 .upper img {
   width: 3em;
   margin: 1em;
+}
+
+@media screen and (max-width: 700px) {
+  .upper #upper-logo {
+    visibility: hidden;
+  }
 }
 
 .upper .__links-wrapper {
@@ -136,8 +180,14 @@ body {
 }
 
 .main .__input-wrapper {
-  width: 40%;
   position: relative;
+  width: 30em;
+}
+
+@media screen and (max-width: 650px) {
+  .main .__input-wrapper {
+    width: 100%;
+  }
 }
 
 .main .__input-wrapper .mathfield {
@@ -161,6 +211,12 @@ body {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
+}
+
+@media screen and (max-width: 650px) {
+  .main .__input-wrapper .mathfield {
+    border-radius: 0;
+  }
 }
 
 .main .__input-wrapper .mq-text-mode {
@@ -206,6 +262,12 @@ body {
   cursor: pointer;
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
+}
+
+@media screen and (max-width: 850px) {
+  .main .__input-wrapper .__action-bar .__help-btn {
+    left: 0.5em;
+  }
 }
 
 .main .__input-wrapper .__action-bar .__help-btn:hover {
@@ -259,6 +321,12 @@ body {
   border-radius: 50%;
 }
 
+@media screen and (max-width: 650px) {
+  .main .__input-wrapper .__errors-icon {
+    right: 0.5em;
+  }
+}
+
 .main .__input-wrapper .__errors-icon img {
   width: 1em;
 }
@@ -266,6 +334,10 @@ body {
 .main .__input-wrapper .__issues-board {
   width: calc(100% - 1em);
   display: none;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
   padding: 0.5em;
   background-color: white;
   border-radius: 0.25em;
@@ -313,6 +385,14 @@ body {
   bottom: 2em;
   -webkit-box-shadow: 0px 0px 2px 2px inset rgba(0, 0, 0, 0.3);
           box-shadow: 0px 0px 2px 2px inset rgba(0, 0, 0, 0.3);
+}
+
+@media screen and (max-width: 850px) {
+  .main .variables-button {
+    right: 1em;
+    bottom: 1em;
+    padding: 0.5em;
+  }
 }
 
 .main .variables-button .__image img {
@@ -472,6 +552,12 @@ body {
           flex-direction: column;
   color: white;
   overflow-y: auto;
+}
+
+@media screen and (min-width: 300px) and (max-width: 950px) {
+  .content-wrapper {
+    width: 80%;
+  }
 }
 
 .content-wrapper .__title {
@@ -655,6 +741,13 @@ body {
   right: 4em;
   top: 4em;
   cursor: pointer;
+}
+
+@media screen and (max-width: 850px) {
+  .vars-page-close-btn {
+    right: 1em;
+    top: 1em;
+  }
 }
 
 .vars-page-close-btn img {

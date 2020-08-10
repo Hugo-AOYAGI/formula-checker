@@ -10,7 +10,16 @@
     & img {
         width: 3em;
         margin: 1em;
+
     }
+
+    @media screen and (max-width: 700px) {
+        #upper-logo {
+            visibility: hidden;
+        }
+    }
+
+    
 
 
     & .__links-wrapper {

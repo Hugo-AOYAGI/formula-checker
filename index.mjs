@@ -1,7 +1,7 @@
 import MathLive from '/modules/mathlive.mjs';
 
+var lang = localStorage.getItem("formula-checler.lang") == null ? navigator.language : localStorage.getItem("formula-checler.lang");
 
-var lang = "en";
 
 var problems = 0;
 
@@ -16,12 +16,23 @@ var greekAlphabetChar = ["α", "β", "γ", "Γ", "δ", "Δ", "ϵ", "ζ", "η", "
 
 var defaultDims = [];
 
+// LOCALES
+var placeholder_loc = {"en": "\\text{Type your formula here}", "fr": "\\text{Ecrivez votre formule ici}"}
+var novars_loc = {"en": "No Variables Yet", "fr": "Vous n'avez encore aucune variable"}
+
+
 $.getJSON('data/dimensions.json', (data) => {
     defaultDims = data;
 });
 
 
 $(document).ready( () => {
+
+
+    $(".__flag").click(() => {
+        lang = lang == "en" ? "fr" : "en";
+        updateLang();
+    });
 
 
     var mathFieldSpan = document.getElementById('mathfield');
@@ -31,11 +42,11 @@ $(document).ready( () => {
         spaceBehavesLikeTab: true,
     });
 
-    mathField.latex("\\text{Type your formula here}");
+    mathField.latex(placeholder_loc[lang]);
 
     $(mathFieldSpan).on("focusin", () => {
         $(mathFieldSpan).addClass("mf-focused");
-        if (mathField.latex() == "\\text{Type your formula here}") {
+        if (mathField.latex() == placeholder_loc[lang]) {
             mathField.latex("");
         }
     });
@@ -43,7 +54,7 @@ $(document).ready( () => {
     $(mathFieldSpan).on("focusout", () => {
         if (mathField.latex().replace("", "") == "") {
             $(mathFieldSpan).removeClass("mf-focused");
-            mathField.latex("\\text{Type your formula here}");
+            mathField.latex(placeholder_loc[lang]);
         }
     });
 
@@ -60,13 +71,13 @@ $(document).ready( () => {
         $(".__confirm-btn").css("display", "none");
         $(".vars-page-close-btn").css("display", "unset");
 
-        if (mathField.latex() != "\\text{Type your formula here}") {
+        if (mathField.latex() != placeholder_loc[lang]) {
             addVariablesToMenu();
         } else if (variables.length == 0) {
             $(".__vars-container").html("");
             $(".__vars-container").append(`
                 <div class="__no-vars-disclaimer">
-                    No variables Yet
+                    ${novars_loc[lang]}
                 </div>
             `);
         }
@@ -81,12 +92,12 @@ $(document).ready( () => {
 
     $(".__go-btn").on("click", () => {
 
-        if (mathField.latex() != "\\text{Type your formula here}") {
+        if (mathField.latex() != placeholder_loc[lang]) {
             addVariablesToMenu();
         }
 
         if (variables.length == 0) {
-            alert("You have no variables yet !");
+            alert(lang == "en" ? "You have no variables yet !" : "Vous n'avez encore aucune variable !");
             return;
         }
 
@@ -107,23 +118,51 @@ $(document).ready( () => {
         problems = 0;
         problem_details = [];
 
+        console.log(tree);
         let globalDim = exploreTree(tree);
+
 
         $(".__issues-board").empty();
 
         if (problems == 0) {
             $(".__errors-icon").css("background-color", "#57DE90").html("<img src='assets/icons/check-mark.png'>").css("display", "flex");
-            $(".__issues-board").append(`<div class="__issue __issue-ok">
+            $(".__issues-board").append(lang == "en" ? `<div class="__issue __issue-ok">
                 The dimension of the whole equation is ${dimListToStringHTML(globalDim)}.
-            </div>`);
+            </div>` :
+            `<div class="__issue __issue-ok">
+                La dimension globale de l'équation est ${dimListToStringHTML(globalDim)}.
+            </div>`
+            );
         }
         else {
             $(".__errors-icon").css("background-color", "#D1675C").html(problems.toString()).css("display", "flex");
 
             for (let i = 0; i < problem_details.length; i++) {
-                $(".__issues-board").append(`<div class="__issue __issue-pb">
-                    \\(${problem_details[i][0]}\\) (${dimListToStringHTML(problem_details[i][2])}) and \\(${problem_details[i][1]}\\) (${dimListToStringHTML(problem_details[i][3])}) are not of the same dimension.
-                </div>`);
+                let child;
+                if (lang == "en") {
+                    if (problem_details[i].length == 4) {
+                        child = `<div class="__issue __issue-pb">
+                            \\(${problem_details[i][0]}\\) (${dimListToStringHTML(problem_details[i][2])}) and \\(${problem_details[i][1]}\\) (${dimListToStringHTML(problem_details[i][3])}) are not of the same dimension.
+                        </div>`;
+                    } else {
+                        child = `<div class="__issue __issue-pb">
+                            \\(${problem_details[i][0]}\\) (${dimListToStringHTML(problem_details[i][1])}) is not of dimension \\(1\\) while being the argument of a ${problem_details[i][2]} function.
+                        </div>`;
+                    }
+                    
+                } else {
+                    if (problem_details[i].length == 4) {
+                        child = `<div class="__issue __issue-pb">
+                        \\(${problem_details[i][0]}\\) (${dimListToStringHTML(problem_details[i][2])}) et \\(${problem_details[i][1]}\\) (${dimListToStringHTML(problem_details[i][3])}) n'ont pas la même dimension.
+                        </div>`;
+                    } else {
+                        child = `<div class="__issue __issue-pb">
+                            \\(${problem_details[i][0]}\\) (${dimListToStringHTML(problem_details[i][1])}) n'est pas sans dimension alors qu'il est l'argument d'une fonction ${problem_details[i][2]}.
+                        </div>`;
+                    }
+                }
+                
+                $(".__issues-board").append(child);
 
                 if (i != problem_details.length - 1) {
                     $(".__issues-board").append(`<div class="__separator"></div>`);
@@ -173,6 +212,37 @@ $(document).ready( () => {
         });
     }
 
+    var updateLang = () => {
+        if (lang == "fr") {
+
+            localStorage.setItem("formula-checler.lang", "fr")
+    
+            $(".__flag").attr("src", "assets/icons/fr-flag.png");
+            if (mathField.latex() == placeholder_loc["en"]) {
+                mathField.latex(placeholder_loc["fr"]);
+            }
+            $("#title-help-page").html("Aide pour équations");
+            $(".__more-disclaimer").html("<a href='http://www.univ-irem.fr/lexique/res/Annexe_E_-_Liste_des_symboles_mathematiques_usuels__LaTeX_.pdf'>En savoir plus sur la syntaxe latex</a>");
+            $("#vars-menu-title").html("Vos variables");
+    
+    
+        } else if (lang == "en") {
+
+            localStorage.setItem("formula-checler.lang", "en")
+    
+            $(".__flag").attr("src", "assets/icons/uk-flag.png");
+            if (mathField.latex() == placeholder_loc["fr"]) {
+                mathField.latex(placeholder_loc["en"]);
+            }
+            $("#title-help-page").html("Equations Cheat Sheet");
+            $(".__more-disclaimer").html("<a href='https://www.overleaf.com/learn/latex/List_of_Greek_letters_and_math_symbols'>More about latex syntax for equations</a>");
+            $("#vars-menu-title").html("Your variables");
+    
+        }
+    }
+
+    updateLang();
+
 
     var addVariablesToMenu = () => {
         getVariablesFromLatex(mathField.latex() + " ");
@@ -208,13 +278,15 @@ $(document).ready( () => {
         if (variables.length == 0) {
             $(".__vars-container").append(`
                 <div class="__no-vars-disclaimer">
-                    No variables Yet
+                    ${novars_loc[lang]}
                 </div>
             `);
         }
 
         $(".__vars-container .__hz-separator").last().remove();
     }
+
+    
 
     var updateVariableName = () => {
         if (selected_variable != "") {
@@ -320,6 +392,8 @@ var getVariablesFromLatex = (latex) => {
     // Find vars with sub attribute for instance V_1 or x_{eq} as well as greek letters
     let subVars = [];
 
+    latex = latex.replace(/\\log_[1-9]/g, "");
+
     for (let letter of greekAlphabetLatex) {
         let greekMatch = latex.match(RegExp("\\" + letter + "[^_]", "g"));
         if (greekMatch != null) {
@@ -391,7 +465,7 @@ var getVariablesFromLatex = (latex) => {
                 }
             }
             if (var_list.length == 1) {
-                var_list.push("length");
+                var_list.push(lang == "en" ? "length" : "longueur");
                 var_list.push([1, 0, 0, 0, 0, 0, 0]);
             }
 
@@ -434,7 +508,7 @@ var dimListToStringHTML = (dimList) => {
         if (dimList[i] == 1) dimString += i != 4 ? baseDims[i] + "." : "θ.";
         else if (dimList[i] != 1 && dimList[i] != 0) dimString += i != 4 ? baseDims[i] + "<sup>" + dimList[i].toString() + "</sup>." : "θ" + "<sup>" + dimList[i].toString() + "</sup>.";
     } 
-    return dimString == "" ? "∅" : dimString.slice(0, dimString.length - 1);
+    return dimString == "" ? "1" : dimString.slice(0, dimString.length - 1);
 }
 
 var exploreTree = (tree) => {
@@ -447,14 +521,22 @@ var exploreTree = (tree) => {
             for (let i=0; i < tree["arg"].length - 1; i++) { 
                 // Check if arg and the next are same dimension
                 // If not, return problem
+                let isWrong = false;
                 let dim1 = exploreTree(tree["arg"][i]), dim2 = exploreTree(tree["arg"][i+1]);
-                if (!areEqual(dim1, dim2)) { 
-                    problems++;
-                    problem_details.push([MathLive.astToLatex(tree["arg"][i]), MathLive.astToLatex(tree["arg"][i+1]), dim1, dim2]);
+                if (dim1.length == 8 || dim2.length == 8) return [0, 0, 0, 0, 0, 0, 0, 0];
+
+                if (!areEqual(dim1, dim2)) {
+                    let details = [MathLive.astToLatex(tree["arg"][i]), MathLive.astToLatex(tree["arg"][i+1]), dim1, dim2];
+                    if (!listIncludesDeep(problem_details, details)) {
+                        problems++;
+                        problem_details.push(details);
+                        isWrong = true;
+                    }
+                    
                 } 
                 
                 if (i == tree["arg"].length - 2) {
-                    return exploreTree(tree["arg"][0]);
+                    return isWrong ? [0, 0, 0, 0, 0, 0, 0, 0] : dim1;
                 }
             }
 
@@ -474,6 +556,13 @@ var exploreTree = (tree) => {
         // If pow, multiply dim by power
         } else if (tree["fn"] == "pow") {
             return (Object.keys(tree).includes("sup")) ? multDim(multDim(exploreTree(tree["arg"][0]), getVal(tree["arg"][1])), getVal(tree["sup"])) : multDim(exploreTree(tree["arg"][0]), getVal(tree["arg"][1]));
+        } else if (["ln", "cos", "sin", "tan", "arccos", "arcsin", "arctan", "exp", "log"].includes(tree["fn"])) {
+            let dim = exploreTree(tree["arg"][0]);
+            if (!areEqual(dim, [0, 0, 0, 0, 0, 0, 0])) {
+                problems++;
+                problem_details.push([MathLive.astToLatex(tree["arg"][0]), dim, "\\( \\" + tree["fn"] + "\\)"]);
+            }
+            return [0, 0, 0, 0, 0, 0, 0]
         }
 
     // If symbol, return dimension of symbol
@@ -482,14 +571,53 @@ var exploreTree = (tree) => {
         let sym = Object.keys(tree).includes("sub") ? tree["sym"] + "_" + getSubSym(tree["sub"]) : tree["sym"];
 
         if (Object.keys(tree).includes("sup")) {
-            return multDim(dimOf(sym), getVal(tree["sup"]));
+            let dim1 = exploreTree(tree["sup"]);
+            let dim2 = dimOf(sym);
+            if (areEqual(dim2, [0, 0, 0, 0, 0, 0, 0])) {
+                if (!areEqual(dim1, [0, 0, 0, 0, 0, 0, 0])) {
+                    problems++;
+                    problem_details.push([MathLive.astToLatex(tree["sup"]), dim1, lang == "en" ? "power" : "puissance"]);
+                }
+                return [0, 0, 0, 0, 0, 0, 0];
+            } else {
+                if (areEqual(dim1, [0, 0, 0, 0, 0, 0, 0])) {
+                    return multDim(dimOf(sym), getVal(tree["sup"]));
+                } else {
+                    return [0, 0, 0, 0, 0, 0, 0];
+                }
+            }
+            
         } else {
             return dimOf(sym);
         }
 
     } else if (Object.keys(tree).includes("num")) {
+        if (Object.keys(tree).includes("sup")) {
+            let dim = exploreTree(tree["sup"]);
+            if (!areEqual(dim, [0, 0, 0, 0, 0, 0, 0])) {
+                problems++;
+                problem_details.push([MathLive.astToLatex(tree["sup"]), dim , lang == "en" ? "power" : "puissance"]);
+            }
+        } 
         return [0, 0, 0, 0, 0, 0, 0];
+        
     }
+}
+
+var listIncludesDeep = (list, element) => {
+    for (let el of list) {
+        let found = true;
+        for (let k = 0; k < el.length; k++) {
+            if (el[k] != element[k]) {
+                found = false;
+                break;
+            }
+            if (found) {
+                return true
+            }
+        }
+    }
+    return false;
 }
 
 var dimOf = (name) => {
@@ -512,6 +640,7 @@ var sumDim = (tree) => {
     let sum = [0, 0, 0, 0, 0, 0, 0];
     for (let arg of tree["arg"]) {
         let symDim = exploreTree(arg);
+        if (symDim.length == 8) sum.push(0); 
         for (let i=0; i<7; i++) {
             sum[i] += symDim[i];
         }
@@ -521,6 +650,8 @@ var sumDim = (tree) => {
 
 var subDim = (dim1, dim2) => {
     let res = dim1.slice();
+
+    if (dim2.length == 8) res.push(0);
 
     for (let i=0; i<7; i++) {
         res[i] -= dim2[i];
@@ -591,4 +722,6 @@ var getVal = (tree) => {
         return parseInt(tree["num"]);
     }
 }
+
+
 
