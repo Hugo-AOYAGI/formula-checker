@@ -12,6 +12,7 @@
 
     <!-- STYLE SHEET -->
     <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./mobile-keyboard.css">
 
     <!-- MATHQUILL -->
     <link rel="stylesheet" href="modules/mathquill/mathquill.css"/>
@@ -24,6 +25,8 @@
     <script type="text/x-mathjax-config">
         MathJax.Hub.Config({
           extensions: ["tex2jax.js"],
+          messageStyle: "none",
+          showMathMenu: false,
           jax: ["input/TeX", "output/HTML-CSS"],
           tex2jax: {
             inlineMath: [ ['$','$'], ["\\(","\\)"] ],
@@ -109,6 +112,230 @@
             </div>
             
         </div>
+
+
+
+
+        <div class="mobile-keyboard" oncontextmenu="return false;">
+            
+        </div>
+
+        <script type="module">
+
+            var greekAlphabetLatex = ["\\alpha", "\\beta", "\\gamma", "\\Gamma", "\\delta", "\\Delta", "\\epsilon", "\\zeta", "\\eta", "\\theta", "\\Theta", "\\iota", "\\kappa", "\\lambda", "\\Lambda", "\\mu", "\\nu", "\\xi", "\\Xi", "\\pi", "\\Pi", "\\rho", "\\varrho", "\\sigma", "\\Sigma", "\\tau", "\\upsilon", "\\Upsilon", "\\varphi", "\\phi", "\\Phi", "\\chi", "\\psi", "\\Psi", "\\omega", "\\Omega", "\\vartheta", "\\varepsilon"];
+            var greekAlphabetChar = ["α", "β", "γ", "Γ", "δ", "Δ", "ϵ", "ζ", "η", "θ", "Θ", "ι", "κ", "λ", "Λ", "μ", "ν", "ξ", "Ξ", "π", "Π", "ρ", "ϱ", "σ", "Σ", "τ", "υ", "ϒ", "ϕ", "φ", "Φ", "χ", "ψ", "Ψ", "ω", "Ω", "ϑ", "ε"];
+
+
+            var kb_num_row = ["\\", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+            var kb_main_row_1 = ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"];
+            var kb_main_row_2 = ["a", "s", "d", "f", "g", "h", "j", "k", "l"];
+            var kb_main_row_3 = ["z", "x", "c", "v", "b", "n", "m"];
+
+
+            var kb_greek_row_1 = ["\\alpha", "\\beta", ["\\gamma", "\\Gamma"], ["\\delta", "\\Delta"], ["\\epsilon", "\\varepsilon"], "\\zeta", "\\eta", ["\\theta", "\\Theta", "\\vartheta"]];
+            var kb_greek_row_2 = ["\\iota", "\\kappa", ["\\lambda", "\\Lambda"], "\\mu", "\\nu", ["\\xi", "\\Xi"], ["\\pi", "\\Pi"], ["\\rho", "\\varrho"]];
+            var kb_greek_row_3 = [["\\sigma", "\\Sigma"], "\\tau", ["\\upsilon", "\\Upsilon"], ["\\phi","\\varphi", "\\Phi"], "\\chi", ["\\psi", "\\Psi"], ["\\omega", "\\Omega"]];
+
+            var kb_fn_row_1 = ["+", "-", "\\times", "=", "/"];
+            var kb_fn_row_2 = ["^n", "_n", "(", ")"];
+            var kb_fn_row_3 = ["\\frac{d}{dt}", "\\ln{}", "\\sin{}", "\\tan{}", "\\cos{}", "\\sqrt[n]{}", "\\sqrt{}"];
+
+            var pages = [
+                [kb_num_row, kb_main_row_1, kb_main_row_2, kb_main_row_3],
+                [kb_num_row, kb_greek_row_1, kb_greek_row_2, kb_greek_row_3],
+                [kb_num_row, kb_fn_row_1, kb_fn_row_2, kb_fn_row_3]
+            ]
+
+            var currPageIndex = 0;
+            var capsEnabled = false;
+            var capsLockEnabled = false;
+
+            var longPressTimer;
+
+
+            var showKeyboardMenu = () => {
+
+                $(".mobile-keyboard").empty();
+
+                for (let i=0; i < pages[currPageIndex].length; i++) {
+                    let row = `<div class="kb-row" id="kb-row-${i}"></div>`;
+                    $(".mobile-keyboard").append(row);
+                    
+                    if (i == 3 && currPageIndex == 0) $("#kb-row-" + i.toString()).append(`<div class="kb-key kb-key-medium kb-dot" id="kb-caps"><img src="assets/icons/up-arrow.png" class="caps-image"></div>`);
+
+                    for (let char of pages[currPageIndex][i]) {
+                        let sym = typeof char == "object" ? char[0] : char;
+                        if (currPageIndex == 1 && i != 0) {
+                            sym = greekAlphabetChar[greekAlphabetLatex.indexOf(sym)]
+                        }
+                        let template = $(`<div class="kb-key kb-key-small${typeof char == "object" ? " kb-dot": ""}">${(currPageIndex == 2 ) && i != 0 ? "$" + sym + "$" : sym}</div>`);
+                        $("#kb-row-" + i.toString()).append(template);
+
+                        template.click(() => {
+                            mathField.focus();
+                            if (char == "\\") {
+                                mathField.typedText("\\");
+                            } else if (char == "/") {
+                                mathField.typedText("/")
+                            } else {
+                                mathField.write(capsEnabled ? sym.toUpperCase() : (typeof char == "object" ? char[0] : char));
+                            }
+                            
+                            if (!capsLockEnabled) {
+                                capsEnabled = false;
+                                updateCaps();
+                            } 
+                        });
+
+                        if (typeof char == "object") {
+                            template.on("touchstart", (evt) => {
+                            longPressTimer = setTimeout(() => {
+                                $(".kb-more-chars").remove();
+                                let target_pos = $(evt.target).position()
+                                $(".mobile-keyboard").append(`<div class="kb-more-chars" style="left: ${target_pos["left"]}px; top: ${target_pos["top"] - 50 - (char.length - 2)*60}px"></div>`);
+
+
+                                for (let k = 1; k < char.length; k++) {
+                                    let node = $(`<div class="kb-more-chars-node" id="kb-more-chars-node-${k}">${greekAlphabetChar[greekAlphabetLatex.indexOf(char[k])]}</div>`)
+                                    $(".kb-more-chars").append(node)
+                                    $("#kb-more-chars-node-" + k).on("click", () => {
+                                        mathField.write(char[k]);
+                                    })
+                                }
+
+                                }, 500);
+                            });
+
+
+                            template.on("touchend touchleave touchcancel", (evt) => {
+                                clearTimeout(longPressTimer);
+                            });
+
+                        }
+
+                        
+                    }   
+
+                    if (i == 3) $("#kb-row-" + i.toString()).append(`<div class="kb-key kb-key-medium" id="kb-bs"><img src="assets/icons/backspace.png" class="bs-image"></div>`);
+                }
+
+                let row = `<div class="kb-row" id="kb-row-last"></div>`;
+                $(".mobile-keyboard").append(row);
+
+                if (currPageIndex == 0) {
+                    $("#kb-row-last").append(`<div class="kb-key kb-key-medium" id="kb-fn">$f(x)$</div>`);
+                    $("#kb-row-last").append(`<div class="kb-key kb-key-medium" id="kb-greek"><img src="assets/icons/greekletters.png" class="greek-image"></div>`);
+                } else if (currPageIndex == 1) {
+                    $("#kb-row-last").append(`<div class="kb-key kb-key-medium" id="kb-main">$abc$</div>`);
+                    $("#kb-row-last").append(`<div class="kb-key kb-key-medium" id="kb-fn">$f(x)$</div>`);
+                } else {
+                    $("#kb-row-last").append(`<div class="kb-key kb-key-medium" id="kb-main">$abc$</div>`);
+                    $("#kb-row-last").append(`<div class="kb-key kb-key-medium" id="kb-greek"><img src="assets/icons/greekletters.png" class="greek-image"></div>`);
+                }
+
+                
+                $("#kb-row-last").append(`<div class="kb-key kb-space-key" id="kb-sp"></div>`);
+                $("#kb-row-last").append(`<div class="kb-key kb-key-medium"></div>`);
+                $("#kb-row-last").append(`<div class="kb-key kb-key-medium"></div>`);
+                
+
+                $("#kb-caps").dblclick(() => {
+                    if (!capsEnabled && !capsLockEnabled) {
+                        capsLockEnabled = true;
+                        capsEnabled = true;
+                        updateCaps();
+                        $("#kb-caps").addClass("kb-caps-lock-enabled");
+                    }
+                });
+
+                $("#kb-caps").click(() => {
+                    if (currPageIndex != 0) return; 
+
+                    capsEnabled = !capsEnabled;
+                    updateCaps();
+
+                    if (capsLockEnabled) {
+                        capsLockEnabled = false;
+                        $("#kb-caps").removeClass("kb-caps-lock-enabled");
+                    }
+
+                });
+
+                $("#kb-bs").click(() => {
+                    mathField.focus();
+                    mathField.keystroke("Shift-Left Del");
+                });
+
+                $("#kb-sp").click(() => {
+                    mathField.focus();
+                    mathField.typedText(" ");
+                });
+
+                var updateCaps = () => {
+                    if (capsEnabled) {
+                        $("#kb-caps").addClass("kb-caps-enabled");
+                    } else {
+                        $("#kb-caps").removeClass("kb-caps-enabled");
+                    }
+
+                    let keys = $(".kb-key-small")
+                    for (let i=0; i < keys.length; i++) {
+                        let key = keys[i]
+                        if (capsEnabled) $(key).html($(key).html().toUpperCase());
+                        else $(key).html($(key).html().toLowerCase());
+                    }
+                }
+
+                $("#kb-main").click(() => {
+                    currPageIndex = 0;
+                    showKeyboardMenu();
+                })
+
+                $("#kb-greek").click(() => {
+                    currPageIndex = 1;
+                    showKeyboardMenu();
+                })
+
+                $("#kb-fn").click(() => {
+                    currPageIndex = 2;
+                    showKeyboardMenu();
+                });
+
+                MathJax.Hub.Queue(["PreProcess",MathJax.Hub], ["Reprocess",MathJax.Hub]);
+
+
+            }
+
+
+            showKeyboardMenu();
+
+            var toggleKeyboard = () => {
+                if ($(".mobile-keyboard").css("display") == "none") $(".mobile-keyboard").css("display", "flex");
+                else $(".mobile-keyboard").css("display", "none");
+            }
+
+            var showKeyboard = () => {
+                $(".mobile-keyboard").css("display", "flex");
+                $(".mobile-keyboard").css("bottom");
+                $(".mobile-keyboard").css("bottom", "0px");
+            }
+
+            var hideKeyboard = () => {
+                $(".mobile-keyboard").css("bottom");
+                $(".mobile-keyboard").css("bottom", "-45%");
+                setTimeout(() => {
+                    $(".mobile-keyboard").css("display", "none");
+                }, 300);
+                
+            }
+
+            window.toggleKeyboard = toggleKeyboard;
+            window.showKeyboard = showKeyboard;
+            window.hideKeyboard = hideKeyboard
+            
+
+
+        </script>
 
     </div>
 

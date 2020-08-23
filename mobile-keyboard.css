@@ -1,0 +1,134 @@
+
+
+.mobile-keyboard {
+
+    width: 100%;
+    height: 40%;
+
+    /* display: flex; */
+
+    display: none;
+
+    flex-direction: column;
+
+    background-color: white;
+
+    position: fixed;
+
+    padding-top: 0.5em;
+
+    bottom: -45%;
+
+    transition: 0.3s all;
+
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+
+.kb-row {
+
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    height: 20%;
+
+}
+
+.kb-key {
+    margin: 0.1em;
+    border-radius: 0.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: "Epilogue", sans-serif;
+
+}
+
+.kb-key:active {
+    border: 0.1px solid black;
+}
+
+.kb-key-small {
+    width: 9%;
+}
+
+.kb-key-medium {
+    width: 13%;
+}
+
+.caps-image {
+    width: 1em;
+}
+
+.kb-caps-enabled {
+    border: 1px solid rgb(39, 111, 156);
+}
+
+.bs-image {
+    width: 1.5em;
+}
+
+.kb-dot::after {
+    content: "";
+    position: absolute;
+
+    margin-left: .5em;
+    margin-bottom: 2.5em;
+
+    width: .2em;
+    height: .2em;
+    border-radius: 50%;
+
+    background-color: lightgrey;
+}
+
+.kb-caps-lock-enabled::after {
+    background-color: rgb(39, 111, 156);
+}
+
+.kb-space-key {
+    margin-top: 0.5em;
+    border: 0.1px solid grey;
+    width: 40%;
+    height: 2.25em;
+}
+
+.greek-image {
+    width: 2em;
+}
+
+.kb-more-chars {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+
+    background-color: white;
+    border-radius: .5em;
+
+    border: .1px solid grey;
+    
+    width: 9%;
+    margin-left: 0.1em;
+    /* padding-top: 0.5em; */
+    /* padding-bottom: 0.5em; */
+
+}
+
+.kb-more-chars-node {
+    width: 100%;
+    height: 2em;
+    
+    font-size: 1.5em;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

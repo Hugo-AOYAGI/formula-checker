@@ -1,6 +1,6 @@
 import MathLive from '/modules/mathlive.mjs';
 
-var lang = localStorage.getItem("formula-checler.lang") == null ? navigator.language : localStorage.getItem("formula-checler.lang");
+var lang = localStorage.getItem("formula-checler.lang") == null ? "en" : localStorage.getItem("formula-checler.lang");
 
 
 var problems = 0;
@@ -10,7 +10,18 @@ var problem_details = [];
 var selected_variable = "";
 
 var greekAlphabetLatex = ["\\alpha", "\\beta", "\\gamma", "\\Gamma", "\\delta", "\\Delta", "\\epsilon", "\\zeta", "\\eta", "\\theta", "\\Theta", "\\iota", "\\kappa", "\\lambda", "\\Lambda", "\\mu", "\\nu", "\\xi", "\\Xi", "\\pi", "\\Pi", "\\rho", "\\varrho", "\\sigma", "\\Sigma", "\\tau", "\\upsilon", "\\Upsilon", "\\varphi", "\\phi", "\\Phi", "\\chi", "\\psi", "\\Psi", "\\omega", "\\Omega", "\\vartheta", "\\varepsilon"];
-var greekAlphabetChar = ["α", "β", "γ", "Γ", "δ", "Δ", "ϵ", "ζ", "η", "θ", "Θ", "ι", "κ", "λ", "Λ", "μ", "ν", "ξ", "Ξ", "π", "Π", "ρ", "ϱ", "σ", "Σ", "τ", "υ", "ϒ", "ϕ", "φ", "Φ", "χ", "ψ", "Ψ", "ω", "Ω", "ϑ", "ε"]
+var greekAlphabetChar = ["α", "β", "γ", "Γ", "δ", "Δ", "ϵ", "ζ", "η", "θ", "Θ", "ι", "κ", "λ", "Λ", "μ", "ν", "ξ", "Ξ", "π", "Π", "ρ", "ϱ", "σ", "Σ", "τ", "υ", "ϒ", "ϕ", "φ", "Φ", "χ", "ψ", "Ψ", "ω", "Ω", "ϑ", "ε"];
+
+
+var isMobile = {
+    Android: () => navigator.userAgent.match(/Android/i),
+    BlackBerry: () => navigator.userAgent.match(/BlackBerry/i),
+    iOS: () => navigator.userAgent.match(/iPhone|iPad|iPod/i),
+    Opera: () => navigator.userAgent.match(/Opera Mini/i),
+    Windows: () => navigator.userAgent.match(/IEMobile/i),
+    any: () => (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows())
+    // any: () => true
+}
 
 // LOAD JSON
 
@@ -25,6 +36,8 @@ $.getJSON('data/dimensions.json', (data) => {
     defaultDims = data;
 });
 
+var mathField;
+
 
 $(document).ready( () => {
 
@@ -38,25 +51,53 @@ $(document).ready( () => {
     var mathFieldSpan = document.getElementById('mathfield');
 
     var MQ = MathQuill.getInterface(2);
-    var mathField = MQ.MathField(mathFieldSpan, {
+    mathField = MQ.MathField(mathFieldSpan, {
         spaceBehavesLikeTab: true,
+        substituteTextarea: () => {
+            return !isMobile.any() ? $("<input id='subSpan'></input>")[0] : $("<span id='subSpan'></span>")[0];
+        },
     });
 
-    mathField.latex(placeholder_loc[lang]);
+    window.mathField = mathField;
 
-    $(mathFieldSpan).on("focusin", () => {
+    if(!isMobile.any()) {
+        mathField.latex(placeholder_loc[lang]);
+
+        $(mathFieldSpan).on("focusin", () => {
+            $(mathFieldSpan).addClass("mf-focused");
+            if (mathField.latex() == placeholder_loc[lang]) {
+                mathField.latex("");
+            }
+            
+        });
+    
+        $(mathFieldSpan).on("focusout", () => {
+            if (mathField.latex().replace("", "") == "") {
+                $(mathFieldSpan).removeClass("mf-focused");
+                mathField.latex(placeholder_loc[lang]);
+            }
+        });
+    } else {
+
         $(mathFieldSpan).addClass("mf-focused");
-        if (mathField.latex() == placeholder_loc[lang]) {
-            mathField.latex("");
-        }
-    });
 
-    $(mathFieldSpan).on("focusout", () => {
-        if (mathField.latex().replace("", "") == "") {
-            $(mathFieldSpan).removeClass("mf-focused");
-            mathField.latex(placeholder_loc[lang]);
-        }
-    });
+        $(mathFieldSpan).on("click", (event) => {
+            showKeyboard();
+            event.stopPropagation();
+        });
+
+        $(".mobile-keyboard").on("click", (event) => {
+            $(".kb-more-chars").remove();
+            event.stopPropagation();
+        });
+
+        $(".main-wrapper").on("click", (event) => {
+            hideKeyboard();
+        })
+
+    }
+
+    
 
     $(".help-page").on("click", () => {
         $(".help-page").css("display", "none");
@@ -71,7 +112,7 @@ $(document).ready( () => {
         $(".__confirm-btn").css("display", "none");
         $(".vars-page-close-btn").css("display", "unset");
 
-        if (mathField.latex() != placeholder_loc[lang]) {
+        if (mathField.latex() != placeholder_loc[lang] && mathField.latex().replace(" ", "") != "") {
             addVariablesToMenu();
         } else if (variables.length == 0) {
             $(".__vars-container").html("");
@@ -92,7 +133,7 @@ $(document).ready( () => {
 
     $(".__go-btn").on("click", () => {
 
-        if (mathField.latex() != placeholder_loc[lang]) {
+        if (mathField.latex() != placeholder_loc[lang] && mathField.latex().replace(" ", "") != "") {
             addVariablesToMenu();
         }
 
@@ -119,57 +160,65 @@ $(document).ready( () => {
         problem_details = [];
 
         console.log(tree);
-        let globalDim = exploreTree(tree);
+        
+        try {
+            let globalDim = exploreTree(tree);
 
+            $(".__issues-board").empty();
 
-        $(".__issues-board").empty();
+            if (problems == 0) {
+                $(".__errors-icon").css("background-color", "#57DE90").html("<img src='assets/icons/check-mark.png'>").css("display", "flex");
+                $(".__issues-board").append(lang == "en" ? `<div class="__issue __issue-ok">
+                    The dimension of the whole equation is ${dimListToStringHTML(globalDim)}.
+                </div>` :
+                `<div class="__issue __issue-ok">
+                    La dimension globale de l'équation est ${dimListToStringHTML(globalDim)}.
+                </div>`
+                );
+            }
+            else {
+                $(".__errors-icon").css("background-color", "#D1675C").html(problems.toString()).css("display", "flex");
 
-        if (problems == 0) {
-            $(".__errors-icon").css("background-color", "#57DE90").html("<img src='assets/icons/check-mark.png'>").css("display", "flex");
-            $(".__issues-board").append(lang == "en" ? `<div class="__issue __issue-ok">
-                The dimension of the whole equation is ${dimListToStringHTML(globalDim)}.
-            </div>` :
-            `<div class="__issue __issue-ok">
-                La dimension globale de l'équation est ${dimListToStringHTML(globalDim)}.
-            </div>`
-            );
-        }
-        else {
-            $(".__errors-icon").css("background-color", "#D1675C").html(problems.toString()).css("display", "flex");
-
-            for (let i = 0; i < problem_details.length; i++) {
-                let child;
-                if (lang == "en") {
-                    if (problem_details[i].length == 4) {
-                        child = `<div class="__issue __issue-pb">
-                            \\(${problem_details[i][0]}\\) (${dimListToStringHTML(problem_details[i][2])}) and \\(${problem_details[i][1]}\\) (${dimListToStringHTML(problem_details[i][3])}) are not of the same dimension.
-                        </div>`;
+                for (let i = 0; i < problem_details.length; i++) {
+                    let child;
+                    if (lang == "en") {
+                        if (problem_details[i].length == 4) {
+                            child = `<div class="__issue __issue-pb">
+                                \\(${problem_details[i][0]}\\) (${dimListToStringHTML(problem_details[i][2])}) and \\(${problem_details[i][1]}\\) (${dimListToStringHTML(problem_details[i][3])}) are not of the same dimension.
+                            </div>`;
+                        } else {
+                            child = `<div class="__issue __issue-pb">
+                                \\(${problem_details[i][0]}\\) (${dimListToStringHTML(problem_details[i][1])}) is not of dimension \\(1\\) while being the argument of a ${problem_details[i][2]} function.
+                            </div>`;
+                        }
+                        
                     } else {
-                        child = `<div class="__issue __issue-pb">
-                            \\(${problem_details[i][0]}\\) (${dimListToStringHTML(problem_details[i][1])}) is not of dimension \\(1\\) while being the argument of a ${problem_details[i][2]} function.
-                        </div>`;
+                        if (problem_details[i].length == 4) {
+                            child = `<div class="__issue __issue-pb">
+                            \\(${problem_details[i][0]}\\) (${dimListToStringHTML(problem_details[i][2])}) et \\(${problem_details[i][1]}\\) (${dimListToStringHTML(problem_details[i][3])}) n'ont pas la même dimension.
+                            </div>`;
+                        } else {
+                            child = `<div class="__issue __issue-pb">
+                                \\(${problem_details[i][0]}\\) (${dimListToStringHTML(problem_details[i][1])}) n'est pas sans dimension alors qu'il est l'argument d'une fonction ${problem_details[i][2]}.
+                            </div>`;
+                        }
                     }
                     
-                } else {
-                    if (problem_details[i].length == 4) {
-                        child = `<div class="__issue __issue-pb">
-                        \\(${problem_details[i][0]}\\) (${dimListToStringHTML(problem_details[i][2])}) et \\(${problem_details[i][1]}\\) (${dimListToStringHTML(problem_details[i][3])}) n'ont pas la même dimension.
-                        </div>`;
-                    } else {
-                        child = `<div class="__issue __issue-pb">
-                            \\(${problem_details[i][0]}\\) (${dimListToStringHTML(problem_details[i][1])}) n'est pas sans dimension alors qu'il est l'argument d'une fonction ${problem_details[i][2]}.
-                        </div>`;
+                    $(".__issues-board").append(child);
+
+                    if (i != problem_details.length - 1) {
+                        $(".__issues-board").append(`<div class="__separator"></div>`);
                     }
                 }
-                
-                $(".__issues-board").append(child);
-
-                if (i != problem_details.length - 1) {
-                    $(".__issues-board").append(`<div class="__separator"></div>`);
-                }
             }
+        } catch (error) {
+            console.log(error);
+            alert(lang == "en" ? "There was an error in the equation or the developper sucks.\n\n" : "Il y a eu une erreur dans l'équation ou le développeur est nul.");
+            $(".vars-wrapper").css("display", "none");
+            return;
         }
 
+        
         $(".__issues-board").css("display", "flex");
         $(".vars-wrapper").css("display", "none");
         console.log("Rendering Math");
@@ -182,7 +231,9 @@ $(document).ready( () => {
 
     $(".vars-wrapper").on("click", (evt) => {
         if (!$(evt.target).hasClass("__dim") && !$(evt.target).hasClass("dim-editor") && $(evt.target).parents(".__dim").length == 0 && $(evt.target).parents(".dim-editor").length == 0) {
-            updateVariableName();
+            if ($(".dim-editor").css("display") != "none") {
+                updateVariableName();
+            }
             $(".dim-editor").css("display", "none");
         }
     });
@@ -202,7 +253,8 @@ $(document).ready( () => {
                 if (variable[0] == selected_variable) {
                     variable[2][i] = parseInt(new_val);
 
-                    let html_sym = (greekAlphabetLatex.indexOf(variable[0]) == -1 ? variable[0] : greekAlphabetChar[greekAlphabetLatex.indexOf(variable[0])]).replace("{", ":bl:").replace("}", ":br:");
+                    let html_sym = variable[0].replace("{", ":bl:").replace("}", ":br:");
+                    html_sym = replaceGreekLatex(html_sym);
 
                     $("#var-" + html_sym + "-dim").html(dimListToStringHTML(variable[2]));
 
@@ -249,7 +301,9 @@ $(document).ready( () => {
         $(".__vars-container").html("");
                 // Display all user variables
         for (let variable of variables) {
-            let html_sym = (greekAlphabetLatex.indexOf(variable[0]) == -1 ? variable[0] : greekAlphabetChar[greekAlphabetLatex.indexOf(variable[0])]).replace("{", ":bl:").replace("}", ":br:");
+            let html_sym = variable[0].replace("{", ":bl:").replace("}", ":br:");
+            html_sym = replaceGreekLatex(html_sym);
+            
             let template = `
                 <div class="__var" id="var-${html_sym}">
                     <div class="__sym">${html_sym.replace(":bl:", "{").replace(":br:", "}")}</div>
@@ -262,8 +316,8 @@ $(document).ready( () => {
             // Listeners
             $(".__vars-container").append(template);
             $("#var-" + html_sym + "-dim").on("click", (evt) => {
-
-                updateVariableName();
+                
+                if ($(".dim-editor").css("display") != "none") updateVariableName();
 
                 selected_variable = variable[0];
                 showDimEditor(evt);
@@ -296,7 +350,8 @@ $(document).ready( () => {
                         if (areEqual(dimStringToList(defaultDims[lang]["units"][unit]), variable_[2])) {
                             variable_[1] = unit;
 
-                            let html_id = (greekAlphabetLatex.indexOf(variable_[0]) == -1 ? variable_[0] : greekAlphabetChar[greekAlphabetLatex.indexOf(variable_[0])]).replace("{", ":bl:").replace("}", ":br:");
+                            let html_id = variable_.replace("{", ":bl:").replace("}", ":br:");
+
                             $("#var-" + html_id + "-name").val(unit);
                             break;
                         }
@@ -349,17 +404,18 @@ $(document).ready( () => {
         `);
 
         $(".__result").click((evt) => {
-            console.log($(evt.target).html());
+
             for (let variable of variables) {
                 if (variable[0] == selected_variable) {
+                    let var_name = replaceGreekLatex(selected_variable).replace("{", "\\:bl\\:").replace("}", "\\:br\\:")
                     if ($(evt.target).html() == "Other") {
-                        variable[1] = $("#var-" + selected_variable.replace("{", "\\:bl\\:").replace("}", "\\:br\\:") + "-name").val().toLowerCase()
+                        variable[1] = $("#var-" + var_name + "-name").val().toLowerCase()
                     } else {
                         variable[1] = $(evt.target).html().toLowerCase()
-                        $("#var-" + selected_variable.replace("{", "\\:bl\\:").replace("}", "\\:br\\:") + "-name").val($(evt.target).html());
+                        $("#var-" +  var_name + "-name").val($(evt.target).html());
 
                         variable[2] = dimStringToList(defaultDims[lang]["units"][$(evt.target).html().toLowerCase()]);
-                        $("#var-" + selected_variable.replace("{", "\\:bl\\:").replace("}", "\\:br\\:") + "-dim").html(dimListToStringHTML(variable[2]));
+                        $("#var-" + var_name + "-dim").html(dimListToStringHTML(variable[2]));
                     }
                     $(".search-results").css("display", "none");
                     break;
@@ -391,6 +447,10 @@ var variables = [];
 var getVariablesFromLatex = (latex) => {
     // Find vars with sub attribute for instance V_1 or x_{eq} as well as greek letters
     let subVars = [];
+    
+    latex = latex.replace("\\ ", "").replace(" ", "");
+
+    latex += " ";
 
     latex = latex.replace(/\\log_[1-9]/g, "");
 
@@ -401,26 +461,25 @@ var getVariablesFromLatex = (latex) => {
                 subVars.push(match.slice(0, match.length - 1));
             }
         }
-        let subGreekMatch = latex.match(RegExp("\\" + letter + "_[a-zA-Z1-9]", "g"));
+        let subGreekMatch = latex.match(RegExp("\\" + letter + "_[a-zA-Z0-9]", "g"));
+
         if (subGreekMatch != null) subGreekMatch = subGreekMatch.concat(latex.match(RegExp("\\" + letter + "_\\{[a-zA-Z1-9]+\\}", "g")));
-        else subGreekMatch = latex.match(RegExp("\\" + letter + "_\\{[a-zA-Z1-9]+\\}", "g"));
+        else subGreekMatch = latex.match(RegExp("\\" + letter + "_\\{[a-zA-Z0-9]+\\}", "g"));
         
         if (subGreekMatch != null) {
             subVars = subVars.concat(subGreekMatch);
         }
-        
-        
     }
 
     let new_latex = latex;
     // Remove them from the latex string
     
     for (let subvar of subVars) {
-        new_latex = latex.replace(subvar, "");
+        new_latex = new_latex.replace(subvar, "");
     }
 
-    subVars = subVars.concat(new_latex.match(/[a-zA-Z]_[a-zA-Z1-9]/g));
-    subVars = subVars.concat(new_latex.match(/[a-zA-Z]_\{[a-zA-Z1-9]+\}/g));
+    subVars = subVars.concat(new_latex.match(/[a-zA-Z]_[a-zA-Z0-9]/g));
+    subVars = subVars.concat(new_latex.match(/[a-zA-Z]_\{[a-zA-Z0-9]+\}/g));
 
     for (let subvar of subVars) {
         new_latex = new_latex.replace(subvar, "");
@@ -428,7 +487,7 @@ var getVariablesFromLatex = (latex) => {
 
 
     // Get other vars
-    let vars_string = new_latex.replace(/\\\w+/g, "").replace(/[\^\{\}\+\-\=\(\)\[\]]/g, "").replace(" ", "").replace(/[0-9]/g, "");
+    let vars_string = new_latex.replace(/\\\w+/g, "").replace(/[\^\{\}\+\-\=\(\)\[\]\|\/]/g, "").replace(" ", "").replace(/[0-9]/g, "");
     let symbols = [...new Set(vars_string.split(""))].concat(subVars);
 
 
@@ -512,10 +571,18 @@ var dimListToStringHTML = (dimList) => {
 }
 
 var exploreTree = (tree) => {
+
+    if (Object.keys(tree).includes("error")) {
+        return dimOf(tree["latex"].replace("\\vec{", "").replace("}", ""));
+    }
+
+
     if (Object.keys(tree).includes("fn")) {
 
+        let result;
+
         // If add, equal or substract, check if the dimensions of all args are the same, if not signal problem
-        if (["equal", "add", "substract"].includes(tree["fn"])) {
+        if (["equal", "add", "subtract"].includes(tree["fn"])) {
 
             // Loop through args of sum
             for (let i=0; i < tree["arg"].length - 1; i++) { 
@@ -536,34 +603,73 @@ var exploreTree = (tree) => {
                 } 
                 
                 if (i == tree["arg"].length - 2) {
-                    return isWrong ? [0, 0, 0, 0, 0, 0, 0, 0] : dim1;
+                    result = isWrong ? [0, 0, 0, 0, 0, 0, 0, 0] : dim1;
                 }
             }
 
 
         // If multiply, return sum of all dimensions
         } else if (tree["fn"] == "multiply") {
-            return (Object.keys(tree).includes("sup")) ? multDim(sumDim(tree), getVal(tree["sup"])) : sumDim(tree);
+            result = sumDim(tree);
         // If divide, return substraction of dimensions
         } else if (tree["fn"] == "divide") {
-            return (Object.keys(tree).includes("sup")) ? multDim(subDim(exploreTree(tree["arg"][0]), exploreTree(tree["arg"][1])), getVal(tree["sup"])) : subDim(exploreTree(tree["arg"][0]), exploreTree(tree["arg"][1]));
+            result = subDim(exploreTree(tree["arg"][0]), exploreTree(tree["arg"][1]));
         // If negate, return same dimension
         } else if (tree["fn"] == "negate") {
-            return (Object.keys(tree).includes("sup")) ? multDim(exploreTree(tree["arg"][0]), getVal(tree["sup"])) : exploreTree(tree["arg"][0]);
+            result = exploreTree(tree["arg"][0]);
         // If sqrt, return halved dimension
         } else if (tree["fn"] == "sqrt") {
-            return (Object.keys(tree).includes("sup")) ? multDim(multDim(exploreTree(tree["arg"][0]), 0.5), getVal(tree["sup"])) : multDim(exploreTree(tree["arg"][0]), 0.5);
+            result = multDim(exploreTree(tree["arg"][0]), 0.5);
         // If pow, multiply dim by power
         } else if (tree["fn"] == "pow") {
-            return (Object.keys(tree).includes("sup")) ? multDim(multDim(exploreTree(tree["arg"][0]), getVal(tree["arg"][1])), getVal(tree["sup"])) : multDim(exploreTree(tree["arg"][0]), getVal(tree["arg"][1]));
-        } else if (["ln", "cos", "sin", "tan", "arccos", "arcsin", "arctan", "exp", "log"].includes(tree["fn"])) {
+            result = multDim(exploreTree(tree["arg"][0]), getVal(tree["arg"][1]));
+        } else if (["ln", "cos", "sin", "tan", "arccos", "arcsin", "arctan", "exp", "log", "sec", "cot", "csc", "arccot", "arcsec", "arccsc"].includes(tree["fn"])) {
             let dim = exploreTree(tree["arg"][0]);
             if (!areEqual(dim, [0, 0, 0, 0, 0, 0, 0])) {
                 problems++;
                 problem_details.push([MathLive.astToLatex(tree["arg"][0]), dim, "\\( \\" + tree["fn"] + "\\)"]);
             }
-            return [0, 0, 0, 0, 0, 0, 0]
+            result = [0, 0, 0, 0, 0, 0, 0];
+        } else if (["f", "g"].includes(tree["fn"])) {
+            if (Object.keys(tree).includes("arg")) {
+                result = sumDim2(dimOf(tree["fn"]), exploreTree(tree["arg"][0]));
+            } else {
+                result = dimOf(tree["fn"]);
+            }
+            
+        } else if (["zeta", "Gamma", "Zeta", "gamma"].includes(tree["fn"])) {
+            if (Object.keys(tree).includes("arg")) {
+                result = sumDim2(dimOf("\\" + tree["fn"]), exploreTree(tree["arg"][0]));
+            } else {
+                result = dimOf("\\" + tree["fn"]);
+            }
+        } else if (tree["fn"] == "abs") {
+            result = exploreTree(tree["arg"][0]);
         }
+
+
+        if (Object.keys(tree).includes("sup")) {
+            let value = getVal(tree["sup"]);
+
+            if (isNaN(value)) {
+
+                let sup_dim = exploreTree(tree["sup"]);
+
+                if (!areEqual(sup_dim, [0, 0, 0, 0, 0, 0, 0])) {
+                    problems++;
+                    problem_details.push([MathLive.astToLatex(tree["sup"]), sup_dim, lang == "en" ? "power" : "puissance"]);
+                    return [0, 0, 0, 0, 0, 0, 0, 0];
+                }
+
+                return [0, 0, 0, 0, 0, 0, 0];
+                
+            } else {
+                return multDim(result, value);
+            }   
+        } else {
+            return result;
+        }
+        
 
     // If symbol, return dimension of symbol
     } else if (Object.keys(tree).includes("sym")) {
@@ -621,19 +727,45 @@ var listIncludesDeep = (list, element) => {
 }
 
 var dimOf = (name) => {
-    let real_name = name;
-
-    for (let j = 0; j < greekAlphabetChar.length; j ++) {
-        if (name == greekAlphabetChar[j]) {
-            real_name = greekAlphabetLatex[j];
-            break;
-        }
-    }
-
+    let real_name = replaceGreekChars(name);
 
     for (let variable of variables) {
         if (variable[0] == real_name) return variable[2];
     }
+
+    // Handle Upsilon
+    if (name == "Υ") {
+        for (let variable of variables) {
+            if (variable[0] == "\\Upsilon") return variable[2];
+        }
+    }
+
+    for (let variable of variables) {
+        if (variable[0] == real_name.replace("var", "")) return variable[2];
+    }
+
+    for (let variable of variables) {
+        if (variable[0] == "\\var" + real_name.replace("\\", "")) return variable[2];
+    }
+    
+}
+
+var replaceGreekChars = (name) => {
+    for (let j = 0; j < greekAlphabetChar.length; j ++) {
+        if (name.includes(greekAlphabetChar[j])) {
+            return name.replace(greekAlphabetChar[j], greekAlphabetLatex[j]);
+        }
+    }
+    return name;
+}
+
+var replaceGreekLatex = (name) => {
+    for (let j = 0; j < greekAlphabetLatex.length; j ++) {
+        if (name.includes(greekAlphabetLatex[j])) {
+            return name.replace(greekAlphabetLatex[j], greekAlphabetChar[j]);
+        }
+    }
+    return name;
 }
 
 var sumDim = (tree) => {
@@ -648,6 +780,7 @@ var sumDim = (tree) => {
     return sum;
 }
 
+
 var subDim = (dim1, dim2) => {
     let res = dim1.slice();
 
@@ -655,6 +788,19 @@ var subDim = (dim1, dim2) => {
 
     for (let i=0; i<7; i++) {
         res[i] -= dim2[i];
+    }
+
+    return res;
+}
+
+
+var sumDim2 = (dim1, dim2) => {
+    let res = dim1.slice();
+
+    if (dim2.length == 8) res.push(0);
+
+    for (let i=0; i<7; i++) {
+        res[i] += dim2[i];
     }
 
     return res;
@@ -722,6 +868,3 @@ var getVal = (tree) => {
         return parseInt(tree["num"]);
     }
 }
-
-
-
